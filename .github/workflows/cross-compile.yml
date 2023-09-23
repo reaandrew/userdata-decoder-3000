@@ -132,3 +132,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload latest ./build/* --clobber
+
+
+  update_dev_release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only run on the main branch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Required for 'git describe' to work
+
+      - name: Get version from git describe
+        id: git_describe
+        run: echo "GIT_DESCRIBE_VERSION=$(git describe --tags)" >> $GITHUB_ENV
+
+      - name: Delete existing 'development' release
+        continue-on-error: true  # Continue if this fails (i.e., the release doesn't exist)
+        run: gh release delete development --yes
+
+      - name: Create new 'development' release
+        run: |
+          gh release create development ./build/* \
+            --title "Development Release" \
+            --notes "Auto-generated development release" \
+            --version ${{ env.GIT_DESCRIBE_VERSION }}
