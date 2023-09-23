@@ -106,9 +106,9 @@ jobs:
 
       - name: Authenticate GH CLI
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo $GH_TOKEN | gh auth login --with-token
+          gh auth login --with-token
 
       - name: Get latest release URL
         id: get_latest_release
