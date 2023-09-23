@@ -1,12 +1,11 @@
-name: Cross-Compile
+name: Cross-Compile and Release
 
 on:
   push:
+    tags:
+      - 'v*'
     branches:
-      - main # or your default branch
-  pull_request:
-    branches:
-      - main # or your default branch
+      - main
 
 jobs:
   build:
@@ -19,7 +18,10 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v2
         with:
-          go-version: '1.21.1' # specify Go version
+          go-version: '1.21.1'
+
+      - name: Run Go Tests
+        run: go test ./...
 
       - name: Create Build Directory
         run: mkdir -p build
@@ -35,3 +37,87 @@ jobs:
         with:
           name: compiled-binaries
           path: ./build/
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-binaries
+          path: ./build
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/cloud-init-decoder-windows-amd64.exe
+          asset_name: cloud-init-decoder-windows-amd64.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/cloud-init-decoder-darwin-amd64
+          asset_name: cloud-init-decoder-darwin-amd64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/cloud-init-decoder-linux-amd64
+          asset_name: cloud-init-decoder-linux-amd64
+          asset_content_type: application/octet-stream
+
+  update-latest-release:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-binaries
+          path: ./build
+
+      - name: Install GitHub CLI
+        run: sudo apt install gh
+
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token ${{secrets.GITHUB_TOKEN}}
+
+      - name: Get latest release URL
+        id: get_latest_release
+        run: echo "RELEASE_URL=$(gh release view latest --json url -q '.url')" >> $GITHUB_ENV
+
+      - name: Remove existing assets
+        run: |
+          ASSET_IDS=$(gh api -X GET $RELEASE_URL/assets -q '.[].id')
+          for id in $ASSET_IDS; do
+            gh api -X DELETE /repos/:owner/:repo/releases/assets/$id
+          done
+
+      - name: Upload new assets to latest release
+        run: |
+          gh release upload latest ./build/* --clobber
