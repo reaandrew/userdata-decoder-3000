@@ -155,6 +155,5 @@ jobs:
       - name: Create new 'development' release
         run: |
           gh release create development ./build/* \
-            --title "Development Release" \
-            --notes "Auto-generated development release" \
-            --version ${{ env.GIT_DESCRIBE_VERSION }}
+          --title "Development Release: ${{ env.GIT_DESCRIBE_VERSION }}" \
+          --notes "Auto-generated development release"
