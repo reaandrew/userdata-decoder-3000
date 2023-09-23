@@ -104,17 +104,15 @@ jobs:
       - name: Install GitHub CLI
         run: sudo apt install gh
 
-      - name: Authenticate GH CLI
+      - name: Get latest release URL
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh auth login --with-token
-
-      - name: Get latest release URL
         id: get_latest_release
         run: echo "RELEASE_URL=$(gh release view latest --json url -q '.url')" >> $GITHUB_ENV
 
       - name: Remove existing assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ASSET_IDS=$(gh api -X GET $RELEASE_URL/assets -q '.[].id')
           for id in $ASSET_IDS; do
@@ -122,5 +120,7 @@ jobs:
           done
 
       - name: Upload new assets to latest release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload latest ./build/* --clobber
