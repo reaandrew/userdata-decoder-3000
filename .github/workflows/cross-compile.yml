@@ -127,6 +127,7 @@ jobs:
           done
 
       - name: Upload new assets to latest release
+        if: env.RELEASE_EXISTS_FOR_UPLOAD == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
