@@ -104,13 +104,20 @@ jobs:
       - name: Install GitHub CLI
         run: sudo apt install gh
 
-      - name: Get latest release URL
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        id: get_latest_release
-        run: echo "RELEASE_URL=$(gh release view latest --json url -q '.url')" >> $GITHUB_ENV
+      - name: Check if release exists
+        id: check_release
+        continue-on-error: true
+        run: |
+          RELEASE_URL=$(gh release view latest --json url -q '.url') || true
+          if [[ -n "$RELEASE_URL" ]]; then
+            echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
+            echo "RELEASE_URL=$RELEASE_URL" >> $GITHUB_ENV
+          else
+            echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
+          fi
 
       - name: Remove existing assets
+        if: env.RELEASE_EXISTS == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
