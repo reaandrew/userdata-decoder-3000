@@ -105,7 +105,10 @@ jobs:
         run: sudo apt install gh
 
       - name: Authenticate GH CLI
-        run: gh auth login --with-token ${{secrets.GITHUB_TOKEN}}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo $GH_TOKEN | gh auth login --with-token
 
       - name: Get latest release URL
         id: get_latest_release
