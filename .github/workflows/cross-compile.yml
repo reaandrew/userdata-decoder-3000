@@ -114,7 +114,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ASSET_IDS=$(gh api -X GET $RELEASE_URL/assets -q '.[].id')
+          ASSET_IDS=$(gh api -X GET $RELEASE_URL/assets -q '.[].id' ||:)
           for id in $ASSET_IDS; do
             gh api -X DELETE /repos/:owner/:repo/releases/assets/$id
           done
