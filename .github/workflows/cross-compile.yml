@@ -145,6 +145,12 @@ jobs:
         with:
           fetch-depth: 0  # Required for 'git describe' to work
 
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-binaries
+          path: ./build
+
       - name: Get version from git describe
         id: git_describe
         run: echo "GIT_DESCRIBE_VERSION=$(git describe --tags)" >> $GITHUB_ENV
