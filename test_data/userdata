@@ -1,7 +1,7 @@
-Content-Type: multipart/mixed; boundary="===============6758256748430075474=="
+Content-Type: multipart/mixed; boundary="===============5437895590499945720=="
 MIME-Version: 1.0
 
---===============6758256748430075474==
+--===============5437895590499945720==
 Content-Type: text/cloud-config; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -17,11 +17,11 @@ ZUhyeXpoWVBTR2hDT3RtbVZ1ZGZLaFlTaDNwTzhTdlE0NzI1cDRyTUM5RU1kTDhCRzFBTnh0cUFp
 VWNHK0hiSHM1TW5ObDUwaTBmRGt4bG9ubFVGUHYwKy9LK0FpaHFjSzhpS3g5U2F4YlpsOUFLdlMy
 SnhPQVFBQQoKICAjIFdyaXRlIHRoZSB0ZW1wbGF0ZSBmaWxlIHRvIC91c3Ivc2hhcmUvc2FtcGxl
 X2FwcC8KICAtIHBhdGg6ICIvdXNyL3NoYXJlL3NhbXBsZV9hcHAvc29tZS10ZXh0LnR4dCIKICAg
-IGVuY29kaW5nOiBneitiNjQKICAgIGNvbnRlbnQ6IEg0c0lDSFZFRkdVQUEzTnZiV1V0ZEdWNGRD
-NTBlSFFBQXdBQUFBQUFBQUFBQUE9PQoKcnVuY21kOgogIC0gWyIvdXNyL2xvY2FsL2Jpbi9zdGFy
-dC5zaCJd
+IGVuY29kaW5nOiBneitiNjQKICAgIGNvbnRlbnQ6IEg0c0lDQXVJR1dVQUEzTnZiV1V0ZEdWNGRD
+NTBlSFFBSzg3UFRWVW9TYTBvVWNqTVU4aElMVW9GQUNlMmZJWVJBQUFBCgpydW5jbWQ6CiAgLSBb
+Ii91c3IvbG9jYWwvYmluL3N0YXJ0LnNoIl0=
 
---===============6758256748430075474==
+--===============5437895590499945720==
 Content-Type: text/x-shellscript; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -29,5 +29,5 @@ Content-Disposition: attachment; filename="start.sh"
 
 ZWNobyAiU3RhcnRlZCI=
 
---===============6758256748430075474==--
+--===============5437895590499945720==--
 

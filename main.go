@@ -6,11 +6,13 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"io"
 	"log"
 	"mime"
 	"mime/multipart"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -132,6 +134,45 @@ func extractMimeAttachments(encodedData []byte) (attachments []MimeAttachment, e
 	}
 
 	return decodeMimAttachments(decoded)
+}
+
+type CloudConfig struct {
+	WriteFiles []WriteFile `yaml:"write_files"`
+}
+
+type WriteFile struct {
+	Path     string `yaml:"path"`
+	Encoding string `yaml:"encoding"`
+	Content  string `yaml:"content"`
+}
+
+func extractCloudConfigWriteFiles(attachment MimeAttachment, baseDir string) (writefiles []WriteFile, err error) {
+	if !strings.Contains(attachment.ContentType, "text/cloud-config") {
+		return []WriteFile{}, fmt.Errorf("not a cloud-config content type")
+	}
+
+	var config CloudConfig
+
+	err = yaml.Unmarshal(attachment.Content, &config)
+	if err != nil {
+		return []WriteFile{}, err
+	}
+
+	for _, file := range config.WriteFiles {
+		fullPath := filepath.Join(baseDir, file.Path)
+
+		dir := filepath.Dir(fullPath)
+		content, err := decode([]byte(file.Content))
+		if err != nil {
+			return []WriteFile{}, err
+		}
+
+		writefiles = append(writefiles, WriteFile{
+			Path:    dir,
+			Content: string(content),
+		})
+	}
+	return writefiles, err
 }
 
 func main() {

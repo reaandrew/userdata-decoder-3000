@@ -8,7 +8,7 @@ write_files:
   # Write the template file to /usr/share/sample_app/
   - path: "/usr/share/sample_app/some-text.txt"
     encoding: gz+b64
-    content: H4sICHVEFGUAA3NvbWUtdGV4dC50eHQAAwAAAAAAAAAAAA==
+    content: H4sICAuIGWUAA3NvbWUtdGV4dC50eHQAK87PTVUoSa0oUcjMU8hILUoFACe2fIYRAAAA
 
 runcmd:
   - ["/usr/local/bin/start.sh"]
