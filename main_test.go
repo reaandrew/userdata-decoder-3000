@@ -30,7 +30,7 @@ func TestUnzip(t *testing.T) {
 	assert.Equal(t, helloWorldExpected, string(result))
 }
 
-func TestDecode_With_Encrypted(t *testing.T) {
+func TestDecodeWithEncrypted(t *testing.T) {
 	encryptedHelloWorld := base64EncodedZippedHelloWorld
 	result, err := decode([]byte(encryptedHelloWorld))
 	assert.Nil(t, err)
