@@ -1,0 +1,33 @@
+Content-Type: multipart/mixed; boundary="===============6758256748430075474=="
+MIME-Version: 1.0
+
+--===============6758256748430075474==
+Content-Type: text/cloud-config; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="cloud-config.yaml"
+
+IyBjbG91ZC1jb25maWcueWFtbAp3cml0ZV9maWxlczoKICAjIFdyaXRlIHRoZSBjb25maWd1cmF0
+aW9uIGZpbGUgdG8gL2V0Yy9zYW1wbGVfYXBwLwogIC0gcGF0aDogIi9ldGMvc2FtcGxlX2FwcC9z
+b21lLXlhbWwueWFtbCIKICAgIGVuY29kaW5nOiBneitiNjQKICAgIGNvbnRlbnQ6IEg0c0lDQ1ZF
+RkdVQUEzTnZiV1V0ZVdGdGJDNTVZVzFzQUUyUE1RL0NJQkNGOS82S0M3c0R0R3J0NkdwME1uRTAx
+M0lxS1VKRGFiWC9Yb3BpR29aM2ZPKzlDOXpjb0h4ZlpRQXJ3SzdURktjYVRUaHhiQjdrM0pTaFVV
+L1V2MkNEUHFxMDk2aWtxWHVnOFZsdGJSc3pYbmxOdkFMR2QyWEJFaEFCN0IyT0JDZDZ3Y1U2TGY5
+ZUhyeXpoWVBTR2hDT3RtbVZ1ZGZLaFlTaDNwTzhTdlE0NzI1cDRyTUM5RU1kTDhCRzFBTnh0cUFp
+VWNHK0hiSHM1TW5ObDUwaTBmRGt4bG9ubFVGUHYwKy9LK0FpaHFjSzhpS3g5U2F4YlpsOUFLdlMy
+SnhPQVFBQQoKICAjIFdyaXRlIHRoZSB0ZW1wbGF0ZSBmaWxlIHRvIC91c3Ivc2hhcmUvc2FtcGxl
+X2FwcC8KICAtIHBhdGg6ICIvdXNyL3NoYXJlL3NhbXBsZV9hcHAvc29tZS10ZXh0LnR4dCIKICAg
+IGVuY29kaW5nOiBneitiNjQKICAgIGNvbnRlbnQ6IEg0c0lDSFZFRkdVQUEzTnZiV1V0ZEdWNGRD
+NTBlSFFBQXdBQUFBQUFBQUFBQUE9PQoKcnVuY21kOgogIC0gWyIvdXNyL2xvY2FsL2Jpbi9zdGFy
+dC5zaCJd
+
+--===============6758256748430075474==
+Content-Type: text/x-shellscript; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="start.sh"
+
+ZWNobyAiU3RhcnRlZCI=
+
+--===============6758256748430075474==--
+

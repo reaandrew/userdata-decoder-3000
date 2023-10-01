@@ -1,0 +1,14 @@
+# cloud-config.yaml
+write_files:
+  # Write the configuration file to /etc/sample_app/
+  - path: "/etc/sample_app/some-yaml.yaml"
+    encoding: gz+b64
+    content: H4sICCVEFGUAA3NvbWUteWFtbC55YW1sAE2PMQ/CIBCF9/6KC7sDtGrt6Gp0MnE013IqKUJDabX/XopiGoZ3fO+9C9zcoHxfZQArwK7TFKcaTThxbB7k3JShUU/Uv2CDPqq096ikqXug8VltbRszXnlNvALGd2XBEhAB7B2OBCd6wcU6Lf9eHryzhYPSGhCOtmmVudfKhYSh3pO8SvQ4725p4rMC9EMdL8BG1ANxtqAiUcG+HbHs5MnNl50i0fDkxlonlUFPv0+/K+AihqcK8iKx9SaxbZl9AKvS2JxOAQAA
+
+  # Write the template file to /usr/share/sample_app/
+  - path: "/usr/share/sample_app/some-text.txt"
+    encoding: gz+b64
+    content: H4sICHVEFGUAA3NvbWUtdGV4dC50eHQAAwAAAAAAAAAAAA==
+
+runcmd:
+  - ["/usr/local/bin/start.sh"]

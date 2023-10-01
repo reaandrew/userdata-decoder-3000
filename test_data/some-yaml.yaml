@@ -1,0 +1,24 @@
+fruits:
+  - apple
+  - banana
+  - cherry
+animals:
+  - cat
+  - dog
+  - elephant
+books:
+  title1: "1984"
+  title2: "Brave New World"
+  title3: "To Kill a Mockingbird"
+nested_data:
+  key1:
+    subkey1: "value1"
+    subkey2: "value2"
+  key2:
+    subkey3: "value3"
+    subkey4: "value4"
+coordinates:
+  - x: 12
+    y: 34
+  - x: 56
+    y: 78
