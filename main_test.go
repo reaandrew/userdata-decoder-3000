@@ -8,42 +8,43 @@ import (
 const (
 	base64EncodedHelloWorld       = "SGVsbG8sIFdvcmxkIQ=="
 	base64EncodedZippedHelloWorld = "H4sIAAAAAAAAA/NIzcnJ11EIzy/KSVEEANDDSuwNAAAA"
+	helloWorldExpected            = "Hello, World!"
 )
 
-func Test_DecodeBase64(t *testing.T) {
+func TestDecodeBase64(t *testing.T) {
 	result, err := decodeBase64([]byte(base64EncodedHelloWorld))
 	assert.Nil(t, err)
-	assert.Equal(t, "Hello, World!", string(result))
+	assert.Equal(t, helloWorldExpected, string(result))
 }
 
-func Test_IsGzipped(t *testing.T) {
+func TestIsGzipped(t *testing.T) {
 	encryptedHelloWorld := base64EncodedZippedHelloWorld
 	assert.True(t, isGzipped([]byte(encryptedHelloWorld)))
 }
 
-func Test_Unzip(t *testing.T) {
+func TestUnzip(t *testing.T) {
 	encryptedHelloWorld := base64EncodedZippedHelloWorld
 
 	result, err := unzipData([]byte(encryptedHelloWorld))
 	assert.Nil(t, err)
-	assert.Equal(t, "Hello, World!", string(result))
+	assert.Equal(t, helloWorldExpected, string(result))
 }
 
-func Test_Decode_With_Encrypted(t *testing.T) {
+func TestDecode_With_Encrypted(t *testing.T) {
 	encryptedHelloWorld := base64EncodedZippedHelloWorld
 	result, err := decode([]byte(encryptedHelloWorld))
 	assert.Nil(t, err)
-	assert.Equal(t, "Hello, World!", string(result))
+	assert.Equal(t, helloWorldExpected, string(result))
 }
 
-func Test_Decode(t *testing.T) {
+func TestDecode(t *testing.T) {
 	encryptedHelloWorld := base64EncodedHelloWorld
 	result, err := decode([]byte(encryptedHelloWorld))
 	assert.Nil(t, err)
-	assert.Equal(t, "Hello, World!", string(result))
+	assert.Equal(t, helloWorldExpected, string(result))
 }
 
-func Test_ExtractMimeAttachments(t *testing.T) {
+func TestExtractMimeAttachments(t *testing.T) {
 	/*  EXAMPLE MESSAGE
 	Content-Type: multipart/mixed; boundary="===============6758256748430075474=="
 	MIME-Version: 1.0

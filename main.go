@@ -58,8 +58,6 @@ type MimeAttachment struct {
 	Content     []byte
 }
 
-const MediaType = "multipart/mixed; boundary=MIMEBOUNDARY"
-
 func extractBoundary(data []byte) (string, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
@@ -78,6 +76,7 @@ func extractBoundary(data []byte) (string, error) {
 	}
 	return "", io.EOF
 }
+
 func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
 	boundary, err := extractBoundary(data)
 	if err != nil {
