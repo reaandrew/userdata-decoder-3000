@@ -5,7 +5,33 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 )
+
+var providers = map[string]DataProvider{
+	"aws": AWSProvider{},
+}
+
+type Config struct {
+	outputDir   string
+	providerKey string
+	args        []string
+}
+
+func (config Config) getProvider() (DataProvider, error) {
+	if config.providerKey == "" {
+		input := config.args[0]
+		return CommandLineProvider{Input: input}, nil
+	} else {
+		var ok bool
+		provider, ok := providers[config.providerKey]
+		if !ok {
+			fmt.Println("Unknown provider:", config.providerKey)
+			os.Exit(1)
+		}
+		return provider, nil
+	}
+}
 
 func main() {
 	if err := run(); err != nil {
@@ -15,32 +41,48 @@ func main() {
 }
 
 func run() error {
-	outputDir, input, err := parseFlags()
+	config, err := parseFlags()
+
+	if err != nil {
+		return err
+	}
+	provider, err := config.getProvider()
 	if err != nil {
 		return err
 	}
 
-	attachments, err := ExtractMimeAttachmentsFromBytes([]byte(input))
+	inputs, err := provider.FetchData()
 	if err != nil {
-		return fmt.Errorf("failed to extract mime attachments: %w", err)
+		return fmt.Errorf("failed to fetch data: %w", err)
 	}
 
-	err = ExtractCloudConfig(attachments, outputDir)
-	if err != nil {
-		return fmt.Errorf("failed to save write files: %w", err)
+	for _, input := range inputs {
+		attachments, err := ExtractMimeAttachmentsFromBytes(input.Data)
+		if err != nil {
+			return fmt.Errorf("failed to extract mime attachments: %w", err)
+		}
+
+		outputPath := filepath.Join(config.outputDir, input.OutputDir)
+
+		err = ExtractCloudConfig(attachments, outputPath)
+		if err != nil {
+			return fmt.Errorf("failed to save write files: %w", err)
+		}
 	}
 
 	return nil
 }
 
-func parseFlags() (output string, input string, err error) {
-	flag.StringVar(&output, "o", "output", "Specify the output directory within your working directory.")
+func parseFlags() (config Config, err error) {
+	flag.StringVar(&config.providerKey, "provider", "", "Specify the data provider (e.g., aws).")
+	flag.StringVar(&config.outputDir, "o", "output", "Specify the output directory within your working directory.")
 	flag.Parse()
 	args := flag.Args()
 
 	if len(args) < 1 {
-		return "", "", errors.New("input file is required")
+		return Config{}, errors.New("Either supply content directly or use a provider")
 	}
+	config.args = args
 
-	return output, args[0], nil
+	return config, nil
 }

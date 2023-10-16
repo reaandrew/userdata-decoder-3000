@@ -54,12 +54,11 @@ Download the precompiled binaries for your respective operating system from the 
 2. Run the application
 
 ```
-./cloud-init-decoder [options]
+./cloud-init-decoder [options] <userdata>
 ```
 
 ### Options
 
-- `-i, --input` : Provide the `cloud-init` userdata file for decoding.
 - `-o, --output` : (Optional) Specify the output directory within your working directory.
 
 Example:
