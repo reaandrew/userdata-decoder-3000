@@ -18,5 +18,9 @@ func decode(data []byte) ([]byte, error) {
 	if isGzipped(data) {
 		return unzipData(data)
 	}
-	return decodeBase64(data)
+	value, err := decodeBase64(data)
+	if err != nil {
+		return data, nil
+	}
+	return value, nil
 }

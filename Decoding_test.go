@@ -24,3 +24,10 @@ func TestDecode(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, helloWorldExpected, string(result))
 }
+
+func TestDecodeNonEncodedValue(t *testing.T) {
+	expected := "Hello, World!"
+	result, err := decode([]byte(expected))
+	assert.Nil(t, err)
+	assert.Equal(t, expected, string(result))
+}
