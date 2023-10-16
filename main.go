@@ -22,7 +22,7 @@ func run() error {
 		return err
 	}
 
-	attachments, err := extractMimeAttachments([]byte(input))
+	attachments, err := ExtractMimeAttachmentsFromBytes([]byte(input))
 	if err != nil {
 		return fmt.Errorf("failed to extract mime attachments: %w", err)
 	}

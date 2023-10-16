@@ -50,7 +50,7 @@ H4sICFuIGWUAA3VzZXJkYXRhAL2USXOjOBTH73wKV+5OC7DTISkfzCKMbXAjQCw3IQhgi2UMXuDTtzqd
 
 func TestExtractMimeAttachments(t *testing.T) {
 
-	attachments, err := extractMimeAttachments([]byte(mimeMessage))
+	attachments, err := ExtractMimeAttachmentsFromBytes([]byte(mimeMessage))
 
 	assert.Nil(t, err)
 	assert.Len(t, attachments, 2)

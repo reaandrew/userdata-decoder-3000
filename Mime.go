@@ -82,7 +82,7 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 	return attachments, err
 }
 
-func extractMimeAttachments(encodedData []byte) (attachments []MimeAttachment, err error) {
+func ExtractMimeAttachmentsFromBytes(encodedData []byte) (attachments []MimeAttachment, err error) {
 	decoded, err := decode(encodedData)
 	if err != nil {
 
