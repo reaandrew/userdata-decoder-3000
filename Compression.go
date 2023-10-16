@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"compress/gzip"
+	"fmt"
 	"io"
 )
 
@@ -21,7 +22,7 @@ func unzipData(data []byte) ([]byte, error) {
 	decodedData, err := decodeBase64(data)
 	r, err := gzip.NewReader(bytes.NewBuffer(decodedData))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unzip data: %w", err)
 	}
 	return io.ReadAll(r)
 }
