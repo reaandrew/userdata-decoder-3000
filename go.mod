@@ -1,4 +1,4 @@
-module github.com/secronyx/cloud-init-decoder
+module github.com/reaandrew/cloud-init-decoder
 
 go 1.20
 
