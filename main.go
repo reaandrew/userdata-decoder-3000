@@ -5,14 +5,15 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
+	"errors"
+	"flag"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"io"
 	"log"
 	"mime"
 	"mime/multipart"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 )
 
@@ -136,62 +137,62 @@ func extractMimeAttachments(encodedData []byte) (attachments []MimeAttachment, e
 	return decodeMimAttachments(decoded)
 }
 
-type CloudConfig struct {
-	WriteFiles []WriteFile `yaml:"write_files"`
-}
-
-type WriteFile struct {
-	Path     string `yaml:"path"`
-	Encoding string `yaml:"encoding"`
-	Content  string `yaml:"content"`
-}
-
-func extractCloudConfigWriteFiles(attachment MimeAttachment, baseDir string) (writefiles []WriteFile, err error) {
-	if !strings.Contains(attachment.ContentType, "text/cloud-config") {
-		return []WriteFile{}, fmt.Errorf("not a cloud-config content type")
-	}
-
-	var config CloudConfig
-
-	err = yaml.Unmarshal(attachment.Content, &config)
-	if err != nil {
-		return []WriteFile{}, err
-	}
-
-	for _, file := range config.WriteFiles {
-		fullPath := filepath.Join(baseDir, file.Path)
-
-		dir := filepath.Dir(fullPath)
-		content, err := decode([]byte(file.Content))
-		if err != nil {
-			return []WriteFile{}, err
-		}
-
-		writefiles = append(writefiles, WriteFile{
-			Path:    dir,
-			Content: string(content),
-		})
-	}
-	return writefiles, err
-}
-
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+}
 
-	if scanner.Scan() {
-		encoded := scanner.Text()
-		attachments, err := extractMimeAttachments([]byte(encoded))
+func run() error {
+	output, input, err := parseFlags()
+	if err != nil {
+		return err
+	}
 
+	attachments, err := extractMimeAttachments([]byte(input))
+	if err != nil {
+		return fmt.Errorf("failed to extract mime attachments: %w", err)
+	}
+
+	for _, attachment := range attachments {
+		if strings.Contains(attachment.ContentType, "text/cloud-config") {
+			cloudConfig, err := ReadCloudConfigFrom(attachment, output)
+			if err != nil {
+				return fmt.Errorf("failed to extract cloud config write files: %w", err)
+			}
+
+			if err := saveWriteFiles(cloudConfig.WriteFiles); err != nil {
+				return fmt.Errorf("failed to save write files: %w", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func parseFlags() (output string, input string, err error) {
+	flag.StringVar(&output, "o", "output", "Specify the output directory within your working directory.")
+	flag.Parse()
+	args := flag.Args()
+
+	if len(args) < 1 {
+		return "", "", errors.New("input file is required")
+	}
+
+	return output, args[0], nil
+}
+
+func saveWriteFiles(writeFiles []WriteFile) error {
+	for _, file := range writeFiles {
+		err := os.MkdirAll(path.Dir(file.Path), 0755)
 		if err != nil {
-			fmt.Println("Failed to extract mime attachments")
+			return fmt.Errorf("error creating output directories: %w", err)
 		}
-
-		for _, attachment := range attachments {
-			fmt.Printf("Attachment - Media Type: %s \n", attachment.ContentType)
+		err = os.WriteFile(file.Path, []byte(file.Content), 0644)
+		if err != nil {
+			return fmt.Errorf("error writing file: %w", err)
 		}
 	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading from stdin:", err)
-	}
+	return nil
 }

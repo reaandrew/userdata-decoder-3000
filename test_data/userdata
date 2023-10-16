@@ -1,7 +1,7 @@
-Content-Type: multipart/mixed; boundary="===============5437895590499945720=="
+Content-Type: multipart/mixed; boundary="===============7114695260841183278=="
 MIME-Version: 1.0
 
---===============5437895590499945720==
+--===============7114695260841183278==
 Content-Type: text/cloud-config; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -21,7 +21,7 @@ IGVuY29kaW5nOiBneitiNjQKICAgIGNvbnRlbnQ6IEg0c0lDQXVJR1dVQUEzTnZiV1V0ZEdWNGRD
 NTBlSFFBSzg3UFRWVW9TYTBvVWNqTVU4aElMVW9GQUNlMmZJWVJBQUFBCgpydW5jbWQ6CiAgLSBb
 Ii91c3IvbG9jYWwvYmluL3N0YXJ0LnNoIl0=
 
---===============5437895590499945720==
+--===============7114695260841183278==
 Content-Type: text/x-shellscript; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -29,5 +29,5 @@ Content-Disposition: attachment; filename="start.sh"
 
 ZWNobyAiU3RhcnRlZCI=
 
---===============5437895590499945720==--
+--===============7114695260841183278==--
 

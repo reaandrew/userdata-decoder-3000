@@ -90,11 +90,3 @@ func TestExtractMimeAttachments(t *testing.T) {
 	assert.Equal(t, attachments[0].ContentType, "text/cloud-config; charset=\"utf-8\"")
 	assert.Equal(t, attachments[1].ContentType, "text/x-shellscript; charset=\"utf-8\"")
 }
-
-func TestExtractWriteFiles(t *testing.T) {
-	attachments, _ := extractMimeAttachments([]byte(mimeMessage))
-
-	writeFiles, err := extractCloudConfigWriteFiles(attachments[0], "./")
-	assert.Nil(t, err)
-	assert.Len(t, writeFiles, 2)
-}
