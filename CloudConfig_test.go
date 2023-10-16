@@ -25,7 +25,7 @@ func TestReadCloudConfigFrom(t *testing.T) {
 			expected: CloudConfig{
 				WriteFiles: []WriteFile{
 					{
-						Path:     "/base/test.txt",
+						Path:     "/test.txt",
 						Encoding: "b64",
 						Content:  "test",
 					},
@@ -46,7 +46,7 @@ func TestReadCloudConfigFrom(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := ReadCloudConfigFrom(tt.attachment, tt.baseDir)
+			result, err := ReadCloudConfigFrom(tt.attachment)
 			if tt.expectedError != "" {
 				assert.Error(t, err)
 				assert.Equal(t, tt.expectedError, err.Error())

@@ -5,8 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path"
-	"strings"
 )
 
 func main() {
@@ -17,7 +15,7 @@ func main() {
 }
 
 func run() error {
-	output, input, err := parseFlags()
+	outputDir, input, err := parseFlags()
 	if err != nil {
 		return err
 	}
@@ -27,17 +25,9 @@ func run() error {
 		return fmt.Errorf("failed to extract mime attachments: %w", err)
 	}
 
-	for _, attachment := range attachments {
-		if strings.Contains(attachment.ContentType, "text/cloud-config") {
-			cloudConfig, err := ReadCloudConfigFrom(attachment, output)
-			if err != nil {
-				return fmt.Errorf("failed to extract cloud config write files: %w", err)
-			}
-
-			if err := saveWriteFiles(cloudConfig.WriteFiles); err != nil {
-				return fmt.Errorf("failed to save write files: %w", err)
-			}
-		}
+	err = ExtractCloudConfig(attachments, outputDir)
+	if err != nil {
+		return fmt.Errorf("failed to save write files: %w", err)
 	}
 
 	return nil
@@ -53,18 +43,4 @@ func parseFlags() (output string, input string, err error) {
 	}
 
 	return output, args[0], nil
-}
-
-func saveWriteFiles(writeFiles []WriteFile) error {
-	for _, file := range writeFiles {
-		err := os.MkdirAll(path.Dir(file.Path), 0755)
-		if err != nil {
-			return fmt.Errorf("error creating output directories: %w", err)
-		}
-		err = os.WriteFile(file.Path, []byte(file.Content), 0644)
-		if err != nil {
-			return fmt.Errorf("error writing file: %w", err)
-		}
-	}
-	return nil
 }

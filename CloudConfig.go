@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
+	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -17,7 +19,22 @@ type CloudConfig struct {
 	WriteFiles []WriteFile `yaml:"write_files"`
 }
 
-func ReadCloudConfigFrom(attachment MimeAttachment, baseDir string) (CloudConfig, error) {
+func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
+	for _, file := range cloudConfig.WriteFiles {
+		err := os.MkdirAll(path.Dir(file.Path), 0755)
+		if err != nil {
+			return fmt.Errorf("error creating output directories: %w", err)
+		}
+		fullPath := filepath.Join(outputDir, file.Path)
+		err = os.WriteFile(fullPath, []byte(file.Content), 0644)
+		if err != nil {
+			return fmt.Errorf("error writing file: %w", err)
+		}
+	}
+	return nil
+}
+
+func ReadCloudConfigFrom(attachment MimeAttachment) (CloudConfig, error) {
 	if !strings.Contains(attachment.ContentType, "text/cloud-config") {
 		return CloudConfig{}, fmt.Errorf("not a cloud-config content type")
 	}
@@ -31,17 +48,32 @@ func ReadCloudConfigFrom(attachment MimeAttachment, baseDir string) (CloudConfig
 
 	var writeFiles []WriteFile
 	for _, file := range config.WriteFiles {
-		fullPath := filepath.Join(baseDir, file.Path)
 		content, err := decode([]byte(file.Content))
 		if err != nil {
 			return CloudConfig{}, err
 		}
 
 		writeFiles = append(writeFiles, WriteFile{
-			Path:     fullPath,
+			Path:     file.Path,
 			Encoding: file.Encoding,
 			Content:  string(content),
 		})
 	}
 	return CloudConfig{WriteFiles: writeFiles}, err
+}
+
+func ExtractCloudConfig(attachments []MimeAttachment, outputDir string) error {
+	for _, attachment := range attachments {
+		if strings.Contains(attachment.ContentType, "text/cloud-config") {
+			cloudConfig, err := ReadCloudConfigFrom(attachment)
+			if err != nil {
+				return fmt.Errorf("failed to extract cloud config write files: %w", err)
+			}
+
+			if err := cloudConfig.SaveWriteFiles(outputDir); err != nil {
+				return fmt.Errorf("failed to save write files: %w", err)
+			}
+		}
+	}
+	return nil
 }
