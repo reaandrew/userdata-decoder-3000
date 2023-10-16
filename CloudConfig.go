@@ -21,11 +21,11 @@ type CloudConfig struct {
 
 func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
 	for _, file := range cloudConfig.WriteFiles {
-		err := os.MkdirAll(path.Dir(file.Path), 0755)
+		fullPath := filepath.Join(outputDir, file.Path)
+		err := os.MkdirAll(path.Dir(fullPath), 0755)
 		if err != nil {
 			return fmt.Errorf("error creating output directories: %w", err)
 		}
-		fullPath := filepath.Join(outputDir, file.Path)
 		err = os.WriteFile(fullPath, []byte(file.Content), 0644)
 		if err != nil {
 			return fmt.Errorf("error writing file: %w", err)
