@@ -48,39 +48,6 @@ const (
 H4sICFuIGWUAA3VzZXJkYXRhAL2USXOjOBTH73wKV+5OC7DTISkfzCKMbXAjQCw3IQhgi2UMXuDTtzqdSk1P9aGnpmp0kepJb/m/+ulpbTPkzTD3xy5/mdUXNlQdOQ9f6uqeZ6+ztL00GTmPq4fVr2u5kL8+K8ulAhaKoiyWXyWwWj0ItmUbc5yf+6ptXmbiIxCE+fxPXAXtl0KG/D58oay9ZHPaNm9V8TqjJTn3+bB6uAxv8+ffpfoMcSZN/5af50ZD26xqipdZSvr8afH5Qq/6ru2r4d2VDAOhZc3tr7O3iuUNqfPVw9+TP46kZg+CYI3qMTUVMdHEYyotaxLSSx7CIV13Mq0ZSLDCbXdGp3ZnaeujBbORRIhZG9Qmnvrhk4m0hkAgoXKxzKRLzaDIzOdiL2EQj8oUh+ItNfFbHKm3/a0tLA0U1ISA6PxcKSwz7SuV4EDNO4skeKOaMgmpJLJ9xMo0vP2sSLN+VFBYJr7EknIi4bI5VGqTc83O0f24c65pg1jauE+WUQAKmO6KCRTQKcNuYEx+k1RYxFxWZmbmVnd8nOAJTm4QjIEhoj1wtu7JMQ/es+QBW6YAASRvgXPKbrYhXpC/vgs2YHdPxDtkwirUlDiV1Q5JCrGl5NtuYvoh6o4pKBcJ65AbbWVvygJ0Go4xRgHZlJV7zM426HwCMRb2Ipbsk2MEG3i39ZNEwuEebnBzgEnPK/So3MVpfT9kJ2gjyR1DYwuJATUHWKMPtnqiJ3IsBpJvxkshCcoxj7o2xKqPpFL3ZTSkOBETM9kTyHyiOzd/Kv2MGcCZLJHqaPQDe4kC8eTrpYYmqPpNCWgAOwGHzmYHysrb2KIfLg+pHtyIr9bIHBYcmUsKsRls4ttuVPY7ADuygUdvKjtPLpaBBBcx6/pDAPcZs0fBa8pvLoaq6/6WI5C8IwIBP7/zxu1XS1NEKlscjbKkdfCJiPCTkecfgQZro5aZWTxZmnXNImfcy04bR1vG9zKN1J4DXNLNmjsrQ+KJIIlKsG/QIvvASfjXPEV4i8R/4GRkoWMiXXB8lXkQqt5UyAFEIQ4VP/bVK+/lXz4OFsRgNreZbuAwu062Id6qbgBVrejGLFwe09B90qp1sffUVOBf410/b/YxDm/XuGYXLgtweVyC01oMrP7LMLrP+zJnrKfnqhv+92nUD3woP/YlH0JJ6LTpuK4CGZWUtzvRrD8WNp8LwncQdAAY8gUAAA==`
 )
 
-func TestDecodeBase64(t *testing.T) {
-	result, err := decodeBase64([]byte(base64EncodedHelloWorld))
-	assert.Nil(t, err)
-	assert.Equal(t, helloWorldExpected, string(result))
-}
-
-func TestIsGzipped(t *testing.T) {
-	encryptedHelloWorld := base64EncodedZippedHelloWorld
-	assert.True(t, isGzipped([]byte(encryptedHelloWorld)))
-}
-
-func TestUnzip(t *testing.T) {
-	encryptedHelloWorld := base64EncodedZippedHelloWorld
-
-	result, err := unzipData([]byte(encryptedHelloWorld))
-	assert.Nil(t, err)
-	assert.Equal(t, helloWorldExpected, string(result))
-}
-
-func TestDecodeWithEncrypted(t *testing.T) {
-	encryptedHelloWorld := base64EncodedZippedHelloWorld
-	result, err := decode([]byte(encryptedHelloWorld))
-	assert.Nil(t, err)
-	assert.Equal(t, helloWorldExpected, string(result))
-}
-
-func TestDecode(t *testing.T) {
-	encryptedHelloWorld := base64EncodedHelloWorld
-	result, err := decode([]byte(encryptedHelloWorld))
-	assert.Nil(t, err)
-	assert.Equal(t, helloWorldExpected, string(result))
-}
-
 func TestExtractMimeAttachments(t *testing.T) {
 
 	attachments, err := extractMimeAttachments([]byte(mimeMessage))
