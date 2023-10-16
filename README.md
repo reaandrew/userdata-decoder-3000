@@ -64,7 +64,7 @@ Download the precompiled binaries for your respective operating system from the 
 Example:
 
 ```
-./cloud-init-decoder -i user-data.txt -o output_folder/
+./cloud-init-decoder -o output_folder/ $(cat test_data/gzip_base64_userdata.txt) 
 ```
 
 ## Contribution
