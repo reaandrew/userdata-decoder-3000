@@ -3,15 +3,32 @@
 
 ## Description
 
-Cloud Startup Data Decoder is a small Golang application designed to decode `cloud-init` and plain userdata  into human-readable files. These files are saved relative to your working directory, facilitating easy investigation for Cybersecurity professionals, DevOps, and Systems Administrators.
+Cloud Startup Data Decoder decodes cloud instance startup data. It works with AWS and handles both cloud-init and plain text formats. Useful for developers, sysadmins, and cybersecurity roles. Azure and GCP support are on the roadmap.
 
 ## Features
 
-- Decode `cloud-init` userdata into readable files
-- Decode plain userdata into readable files
+### Current Features
+
+- AWS User Data Support: Decode and analyze user data in Amazon EC2 instances.
+- Cloud-Init Support: Decode cloud-init formatted user data, widely used for cloud instance initialization.
+- Plain User Data: Decode plain-text user data that doesn't follow the cloud-init format.
+
+### Upcoming Features (TODO)
+
+- Azure Support: Extend decoding capabilities to Azure's Custom Script Extension and user data.
+- GCP Support: Extend decoding capabilities to include Google Cloud Platform's startup scripts and metadata.
+
+### Usage Scenarios
+
+- Cloud Migration: Easily understand startup configurations when migrating across cloud platforms.
+- Security Auditing: Utilize this tool to audit startup scripts for any security vulnerabilities.
+- Debugging: Decode and analyze startup data to debug instance initialization issues.
+
+### How it works
+
+- Decode userdata into readable files in the output directory
 - Save decoded files relative to the working directory for easy access
 - Cross-platform support: Windows, Linux, macOS
-- Support for various `cloud-init` data formats (e.g., YAML, JSON)
 
 ## Requirements
 
