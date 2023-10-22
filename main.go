@@ -9,7 +9,7 @@ import (
 )
 
 var providers = map[string]DataProvider{
-	"aws": AWSProvider{},
+	"aws": NewDefaultAwsProvider(),
 }
 
 type Config struct {
@@ -79,7 +79,7 @@ func parseFlags() (config Config, err error) {
 	flag.Parse()
 	args := flag.Args()
 
-	if len(args) < 1 {
+	if config.providerKey == "" && len(args) < 1 {
 		return Config{}, errors.New("Either supply content directly or use a provider")
 	}
 	config.args = args

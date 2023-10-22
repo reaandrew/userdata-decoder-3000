@@ -10,20 +10,32 @@ import (
 )
 
 type AWSProvider struct {
-	// AWS-specific fields here
+	client ec2ClientAPI
 }
 
-func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
+type ec2ClientAPI interface {
+	DescribeInstances(ctx context.Context, params *ec2.DescribeInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstancesOutput, error)
+	DescribeInstanceAttribute(ctx context.Context, params *ec2.DescribeInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceAttributeOutput, error)
+}
+
+func NewAwsProvider(client ec2ClientAPI) AWSProvider {
+	return AWSProvider{client: client}
+}
+
+func NewDefaultAwsProvider() AWSProvider {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
-
 	// Initialize EC2 client
-	client := ec2.NewFromConfig(cfg)
+	return AWSProvider{
+		client: ec2.NewFromConfig(cfg),
+	}
+}
 
+func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 	// List instances (you might want to filter them)
-	instancesOutput, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{})
+	instancesOutput, err := p.client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{})
 	if err != nil {
 		log.Fatalf("Error describing instances: %v", err)
 	}
@@ -35,7 +47,7 @@ func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 			instanceID := *instance.InstanceId
 
 			// Describe instance attributes to get user data
-			attributeOutput, err := client.DescribeInstanceAttribute(context.TODO(), &ec2.DescribeInstanceAttributeInput{
+			attributeOutput, err := p.client.DescribeInstanceAttribute(context.TODO(), &ec2.DescribeInstanceAttributeInput{
 				Attribute:  "userData",
 				InstanceId: aws.String(instanceID),
 			})
