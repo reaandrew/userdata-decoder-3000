@@ -6,15 +6,12 @@ import (
 )
 
 func TestCommandLineProviderFetchData(t *testing.T) {
-	// Arrange
 	provider := CommandLineProvider{
 		Input: "test_input",
 	}
 
-	// Act
 	outputPairs, err := provider.FetchData()
 
-	// Assert
 	assert.NoError(t, err)
 	assert.NotNil(t, outputPairs)
 	assert.Equal(t, 1, len(outputPairs))

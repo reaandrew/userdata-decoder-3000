@@ -27,26 +27,25 @@ func NewDefaultAwsProvider() AWSProvider {
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
-	// Initialize EC2 client
+
 	return AWSProvider{
 		client: ec2.NewFromConfig(cfg),
 	}
 }
 
 func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
-	// List instances (you might want to filter them)
+
 	instancesOutput, err := p.client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{})
 	if err != nil {
 		log.Fatalf("Error describing instances: %v", err)
 	}
 
 	var outputPairs []DataOutputPair
-	// Loop through reservations and instances
+
 	for _, reservation := range instancesOutput.Reservations {
 		for _, instance := range reservation.Instances {
 			instanceID := *instance.InstanceId
 
-			// Describe instance attributes to get user data
 			attributeOutput, err := p.client.DescribeInstanceAttribute(context.TODO(), &ec2.DescribeInstanceAttributeInput{
 				Attribute:  "userData",
 				InstanceId: aws.String(instanceID),
@@ -55,7 +54,6 @@ func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 				log.Fatalf("Error describing instance attributes for %s: %v", instanceID, err)
 			}
 
-			// Display user data (base64-encoded)
 			if attributeOutput.UserData != nil {
 				userData := *attributeOutput.UserData.Value
 				fmt.Printf("Instance ID: %s, User Data: %s\n", instanceID, userData)
@@ -69,6 +67,5 @@ func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 		}
 	}
 
-	// Fetch data from AWS and return it as a slice of DataOutputPair
 	return outputPairs, nil
 }

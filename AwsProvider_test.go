@@ -36,7 +36,7 @@ func (m mockEC2Client) DescribeInstanceAttribute(ctx context.Context, params *ec
 }
 
 func TestFetchData(t *testing.T) {
-	mockClient := &mockEC2Client{} // Initialize as non-nil
+	mockClient := &mockEC2Client{}
 
 	p := NewAwsProvider(mockClient)
 
@@ -44,7 +44,6 @@ func TestFetchData(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, outputPairs)
 
-	// Verify if the output is as expected
 	assert.Equal(t, 1, len(outputPairs))
 	if len(outputPairs) > 0 {
 		assert.Equal(t, "i-1234567890", outputPairs[0].OutputDir)

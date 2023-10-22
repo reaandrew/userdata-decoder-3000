@@ -79,7 +79,6 @@ func parseFlags() (config Config, err error) {
 	flag.StringVar(&config.outputDir, "o", "output", "Specify the output directory within your working directory.")
 	flag.StringVar(&config.outputDir, "output-dir", "output", "Specify the output directory within your working directory.")
 
-	// Override the default flag.Usage variable
 	flag.Usage = func() {
 		fmt.Println("Usages:")
 		fmt.Println("  cloud-init-decoder [OPTIONS]             : Specify options for data provider and output directory.")

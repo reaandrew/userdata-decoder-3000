@@ -2,8 +2,10 @@ package main
 
 import (
 	_ "bytes"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,7 +45,6 @@ func TestReadCloudConfigFrom(t *testing.T) {
 			baseDir:       "/base",
 			expectedError: "not a cloud-config content type",
 		},
-		// Add more test cases as needed
 	}
 
 	for _, tt := range tests {
@@ -80,31 +81,25 @@ func TestSaveWriteFiles(t *testing.T) {
 				"dir/file2.txt": "content2",
 			},
 		},
-		// Add more test cases as needed
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create a temporary directory
 			tempDir, err := os.MkdirTemp("", "test")
 			if err != nil {
 				t.Fatalf("could not create temp dir: %v", err)
 			}
-			defer os.RemoveAll(tempDir) // clean up
+			defer os.RemoveAll(tempDir)
 
-			// Run the function
 			err = tt.cloudConfig.SaveWriteFiles(tempDir)
 
-			// Check for expected error
 			if tt.expectedError != nil {
 				assert.Equal(t, tt.expectedError, err)
 				return
 			}
 
-			// Check for unexpected error
 			assert.NoError(t, err)
 
-			// Validate the files were saved correctly
 			for relPath, expectedContent := range tt.expectedFiles {
 				fullPath := filepath.Join(tempDir, relPath)
 				actualContent, err := os.ReadFile(fullPath)
@@ -164,30 +159,50 @@ write_files:
 				"multiline.txt": "This is line 1.\nThis is line 2.\nThis is line 3.\n",
 			},
 		},
+		{
+			name:          "No attachments",
+			attachments:   []MimeAttachment{},
+			expectedFiles: map[string]string{},
+		},
+		{
+			name: "Attachment with different content type",
+			attachments: []MimeAttachment{
+				{
+					ContentType: "text/plain",
+					Content:     []byte("Some random content"),
+				},
+			},
+			expectedFiles: map[string]string{},
+		},
+		{
+			name: "ReadCloudConfigFrom returns an error",
+			attachments: []MimeAttachment{
+				{
+					ContentType: "text/cloud-config",
+					Content:     []byte("invalid content"),
+				},
+			},
+			expectedError: fmt.Errorf("failed to extract cloud config write files:"),
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create a temporary directory
 			tempDir, err := os.MkdirTemp("", "test")
 			if err != nil {
 				t.Fatalf("could not create temp dir: %v", err)
 			}
-			defer os.RemoveAll(tempDir) // clean up
+			defer os.RemoveAll(tempDir)
 
-			// Run the function
 			err = ExtractCloudConfig(tt.attachments, tempDir)
 
-			// Check for expected error
 			if tt.expectedError != nil {
-				assert.Equal(t, tt.expectedError, err)
+				assert.True(t, strings.Contains(err.Error(), tt.expectedError.Error()), "error should contain: %s", tt.expectedError.Error())
 				return
 			}
 
-			// Check for unexpected error
 			assert.NoError(t, err)
 
-			// Validate the files were saved correctly
 			for relPath, expectedContent := range tt.expectedFiles {
 				fullPath := filepath.Join(tempDir, relPath)
 				actualContent, err := os.ReadFile(fullPath)
