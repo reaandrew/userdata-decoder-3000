@@ -74,9 +74,24 @@ func run() error {
 }
 
 func parseFlags() (config Config, err error) {
+	flag.StringVar(&config.providerKey, "p", "", "Specify the data provider (e.g., aws).")
 	flag.StringVar(&config.providerKey, "provider", "", "Specify the data provider (e.g., aws).")
 	flag.StringVar(&config.outputDir, "o", "output", "Specify the output directory within your working directory.")
+	flag.StringVar(&config.outputDir, "output-dir", "output", "Specify the output directory within your working directory.")
+
+	// Override the default flag.Usage variable
+	flag.Usage = func() {
+		fmt.Println("Usages:")
+		fmt.Println("  cloud-init-decoder [OPTIONS]             : Specify options for data provider and output directory.")
+		fmt.Println("  cloud-init-decoder [CONTENT_TO_DECODE]   : Specify the content to decode as the first argument.")
+		fmt.Println("\nOptions:")
+		fmt.Println("  -o, --output-dir: Specify the output directory within your working directory. (default \"output\")")
+		fmt.Println("  -p, --provider:   Specify the data provider (e.g., aws).")
+		os.Exit(0)
+	}
+
 	flag.Parse()
+
 	args := flag.Args()
 
 	if config.providerKey == "" && len(args) < 1 {

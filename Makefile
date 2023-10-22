@@ -2,4 +2,4 @@
 
 build_for_dev:
 	mkdir -p dist
-	go build -o dist/cloud-init-decoder ./
+	go build -o dist/cloud-startup-data-decoder ./

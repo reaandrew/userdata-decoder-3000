@@ -55,22 +55,29 @@ Download the precompiled binaries for your respective operating system from the 
 2. Run the application
 
 ```
-./cloud-startup-data-decoder [options] <userdata>
+Usages:
+  cloud-startup-data-decoder [OPTIONS]             : Specify options for data provider and output directory.
+  cloud-startup-data-decoder [CONTENT_TO_DECODE]   : Specify the content to decode as the first argument.
+
+Options:
+  -o, --output-dir: Specify the output directory within your working directory. (default "output")
+  -p, --provider:   Specify the data provider (e.g., aws).
+
 ```
 
 ### Options
 
-- `-o, --output` : (Optional) Specify the output directory within your working directory.
+- `-o, --output-dir` : (Optional) Specify the output directory within your working directory.
 - `-p, --provider` : (Optional) Specify a cloud provider to get startup data from instances
 
 Example:
 
 ```
-./cloud-startup-data-decoder -o output_folder/ $(cat test_data/gzip_base64_userdata.txt) 
+./cloud-startup-data-decoder $(cat test_data/gzip_base64_userdata.txt) 
 
 OR
 
-./cloud-startup-data-decoder -o output_folder/ --provider aws
+./cloud-startup-data-decoder --provider aws
 ```
 
 ## Contribution
