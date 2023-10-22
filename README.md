@@ -1,13 +1,14 @@
 
-# Cloud-Init Userdata Decoder
+# Cloud Startup Data Decoder
 
 ## Description
 
-Cloud-Init Userdata Decoder is a small Golang application designed to decode `cloud-init` userdata into human-readable files. These files are saved relative to your working directory, facilitating easy investigation for Cybersecurity professionals, DevOps, and Systems Administrators.
+Cloud Startup Data Decoder is a small Golang application designed to decode `cloud-init` and plain userdata  into human-readable files. These files are saved relative to your working directory, facilitating easy investigation for Cybersecurity professionals, DevOps, and Systems Administrators.
 
 ## Features
 
 - Decode `cloud-init` userdata into readable files
+- Decode plain userdata into readable files
 - Save decoded files relative to the working directory for easy access
 - Cross-platform support: Windows, Linux, macOS
 - Support for various `cloud-init` data formats (e.g., YAML, JSON)
@@ -24,13 +25,13 @@ Cloud-Init Userdata Decoder is a small Golang application designed to decode `cl
 1. Clone the repository
 
 ```
-git clone https://github.com/your-repo/cloud-init-decoder.git
+git clone git@github.com:reaandrew/cloud-startup-data-decoder.git
 ```
 
 2. Navigate to the project directory
 
 ```
-cd cloud-init-decoder
+cd cloud-startup-data-decoder
 ```
 
 3. Build the project
@@ -54,17 +55,22 @@ Download the precompiled binaries for your respective operating system from the 
 2. Run the application
 
 ```
-./cloud-init-decoder [options] <userdata>
+./cloud-startup-data-decoder [options] <userdata>
 ```
 
 ### Options
 
 - `-o, --output` : (Optional) Specify the output directory within your working directory.
+- `-p, --provider` : (Optional) Specify a cloud provider to get startup data from instances
 
 Example:
 
 ```
-./cloud-init-decoder -o output_folder/ $(cat test_data/gzip_base64_userdata.txt) 
+./cloud-startup-data-decoder -o output_folder/ $(cat test_data/gzip_base64_userdata.txt) 
+
+OR
+
+./cloud-startup-data-decoder -o output_folder/ --provider aws
 ```
 
 ## Contribution
