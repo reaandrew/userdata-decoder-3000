@@ -73,24 +73,24 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/cloud-init-decoder-windows-amd64.exe
-          asset_name: cloud-init-decoder-windows-amd64.exe
+          asset_path: ./build/cloud-startup-data-decoder-windows-amd64.exe
+          asset_name: cloud-startup-data-decoder-windows-amd64.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/cloud-init-decoder-darwin-amd64
-          asset_name: cloud-init-decoder-darwin-amd64
+          asset_path: ./build/cloud-startup-data-decoder-darwin-amd64
+          asset_name: cloud-startup-data-decoder-darwin-amd64
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/cloud-init-decoder-linux-amd64
-          asset_name: cloud-init-decoder-linux-amd64
+          asset_path: ./build/cloud-startup-data-decoder-linux-amd64
+          asset_name: cloud-startup-data-decoder-linux-amd64
           asset_content_type: application/octet-stream
 
   update-latest-release:
