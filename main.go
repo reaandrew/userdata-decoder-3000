@@ -4,34 +4,9 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
-	"path/filepath"
 )
-
-var providers = map[string]DataProvider{
-	"aws": NewDefaultAwsProvider(),
-}
-
-type Config struct {
-	outputDir   string
-	providerKey string
-	args        []string
-}
-
-func (config Config) getProvider() (DataProvider, error) {
-	if config.providerKey == "" {
-		input := config.args[0]
-		return CommandLineProvider{Input: input}, nil
-	} else {
-		var ok bool
-		provider, ok := providers[config.providerKey]
-		if !ok {
-			fmt.Println("Unknown provider:", config.providerKey)
-			os.Exit(1)
-		}
-		return provider, nil
-	}
-}
 
 func main() {
 	if err := run(); err != nil {
@@ -48,7 +23,7 @@ func run() error {
 	}
 	provider, err := config.getProvider()
 	if err != nil {
-		return err
+		log.Fatalf("failed to the provider")
 	}
 
 	inputs, err := provider.FetchData()
@@ -56,21 +31,9 @@ func run() error {
 		return fmt.Errorf("failed to fetch data: %w", err)
 	}
 
-	for _, input := range inputs {
-		attachments, err := ExtractMimeAttachmentsFromBytes(input.Data)
-		if err != nil {
-			return fmt.Errorf("failed to extract mime attachments: %w", err)
-		}
-
-		outputPath := filepath.Join(config.outputDir, input.OutputDir)
-
-		err = ExtractCloudConfig(attachments, outputPath)
-		if err != nil {
-			return fmt.Errorf("failed to save write files: %w", err)
-		}
-	}
-
-	return nil
+	return InputProcessor{
+		config: config,
+	}.Process(inputs)
 }
 
 func parseFlags() (config Config, err error) {

@@ -4,12 +4,15 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"io"
 	"log"
 	"mime"
 	"mime/multipart"
 	"strings"
 )
+
+var errFailedToExtractMimeBoundary = errors.New("failed to get MIME boundary")
 
 type MimeAttachment struct {
 	ContentType string
@@ -35,10 +38,10 @@ func extractBoundary(data []byte) (string, error) {
 	return "", io.EOF
 }
 
-func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
+func ExtractMimeAttachmentsFromBytes(data []byte) (attachments []MimeAttachment, err error) {
 	boundary, err := extractBoundary(data)
 	if err != nil {
-		log.Fatalf("Failed to get boundary: %s", err)
+		return []MimeAttachment{}, errFailedToExtractMimeBoundary
 	}
 
 	reader := multipart.NewReader(bytes.NewReader(data), boundary)
@@ -80,14 +83,4 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 	}
 
 	return attachments, err
-}
-
-func ExtractMimeAttachmentsFromBytes(encodedData []byte) (attachments []MimeAttachment, err error) {
-	decoded, err := decode(encodedData)
-	if err != nil {
-
-		return
-	}
-
-	return decodeMimAttachments(decoded)
 }
