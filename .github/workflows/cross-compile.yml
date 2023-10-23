@@ -35,7 +35,8 @@ jobs:
         run: |
           env GOOS=windows GOARCH=amd64 go build -o ./build/cloud-init-decoder-windows-amd64.exe
           env GOOS=darwin GOARCH=amd64 go build -o ./build/cloud-init-decoder-darwin-amd64
-          env GOOS=linux GOARCH=amd64 go build -o ./build/cloud-init-decoder-linux-amd64
+#          env GOOS=linux GOARCH=amd64 go build -o ./build/cloud-init-decoder-linux-amd64
+          env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=musl-gcc go build --ldflags '-linkmode external -extldflags "-static"' -o ./build/cloud-init-decoder-linux-amd64
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
