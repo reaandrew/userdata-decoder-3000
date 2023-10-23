@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -56,13 +55,10 @@ func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 
 			if attributeOutput.UserData != nil {
 				userData := *attributeOutput.UserData.Value
-				fmt.Printf("Instance ID: %s, User Data: %s\n", instanceID, userData)
 				outputPairs = append(outputPairs, DataOutputPair{
 					Data:      []byte(userData),
 					OutputDir: instanceID,
 				})
-			} else {
-				fmt.Printf("Instance ID: %s, User Data: None\n", instanceID)
 			}
 		}
 	}
