@@ -46,6 +46,47 @@ OR
 ./cloud-startup-data-decoder --provider aws
 ```
 
+Given the following User Data (example and partial content) which is base64 encoded gzipped multi-part mime message with embedded encoded files inside, you can see before and after running the tool where the content is decoded and rebuilt into a directory structure consistent with the data:
+
+```shell
+50PcHBExXr4k2LwUZUpAyiY2hKtPFzKLS179+8galc2Ad8WTPqPGS4vAtBvbHcSsWMLqpPcJ6/Ln
+sg+VmrXNj90ETOYYhusFekUp7EHs/hbF11ftgljwYtBpVR21lwMU/6FNd8kxU6Mgjs5RfmPt+/EU
+xp3aOU+6WNYKPt/0VjbV4GNJ5/iS4OKQ/8M+KmZNpSXfle9Zo6zKQf4m4wTCC6TDRpNHFbVboW/N
+UWCPsu+mdPBO58XWZL6F0wuaUAwbSLxDQF3wADN3SJDVocOqHPaYnd+NoDd.... AND THE REST
+```
+
+**OUTPUT**
+
+```shell
+-- i-0c9086lee0g83cg3d
+    -- etc
+       |-- chrony.conf
+       |-- containerd
+       |   -- config.toml
+       |-- eks
+       |   -- containerd
+       |      -- pull-content.sh
+       |-- environment
+       |-- kubernetes
+       |   |-- kubelet
+       |       |-- kubeconfig
+       |        -- kubelete-config.json
+       AND THE REST ...
+```
+
+Even if your userdata is simple content or not encoded, it will still be pulled down and output into a folder matching the ID of the instance
+
+```shell
+-- i-0c9086lee0g83cg3d
+   -- userdata
+````
+
+In this example, the content of the userdata is placed in a file called user data.
+
+## Next Steps
+
+After you have decoded all the user data for the instances, you can then run analysis over the files including secret detection.
+
 
 ## Features
 
