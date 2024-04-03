@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"log"
+	"sync"
 )
 
 type AWSProvider struct {
@@ -33,39 +36,58 @@ func NewDefaultAwsProvider() AWSProvider {
 	}
 }
 
-func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
-
+func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 	instancesOutput, err := p.client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{})
 	if err != nil {
-		log.Fatalf("Error describing instances: %v", err)
+		return nil, fmt.Errorf("error describing instances: %w", err)
 	}
 
-	var outputPairs []DataOutputPair
+	var (
+		outputPairs []DataOutputPair
+		wg          sync.WaitGroup
+		mu          sync.Mutex // Protects outputPairs
+	)
 
 	for _, reservation := range instancesOutput.Reservations {
 		for _, instance := range reservation.Instances {
-			instanceID := *instance.InstanceId
+			wg.Add(1)
+			go func(instance types.Instance) {
+				defer wg.Done()
 
-			attributeOutput, err := p.client.DescribeInstanceAttribute(context.TODO(), &ec2.DescribeInstanceAttributeInput{
-				Attribute:  "userData",
-				InstanceId: aws.String(instanceID),
-			})
-
-			if err != nil {
-				log.Fatalf("Error describing instance attributes for %s: %v", instanceID, err)
-			}
-			fmt.Println(attributeOutput)
-			if attributeOutput != nil && attributeOutput.UserData != nil && attributeOutput.UserData.Value != nil {
-				userData := *attributeOutput.UserData.Value
-				outputPairs = append(outputPairs, DataOutputPair{
-					Data:      []byte(userData),
-					OutputDir: instanceID,
+				instanceID := *instance.InstanceId
+				attributeOutput, err := p.client.DescribeInstanceAttribute(context.TODO(), &ec2.DescribeInstanceAttributeInput{
+					Attribute:  types.InstanceAttributeNameUserData,
+					InstanceId: aws.String(instanceID),
 				})
-			} else {
-				fmt.Println("Something wrong with the attributeOutput")
-			}
+
+				if err != nil {
+					// Log the error; adjust error handling as necessary for your application.
+					log.Printf("Error describing instance attributes for %s: %v", instanceID, err)
+					return // Proceed with the next iteration.
+				}
+
+				if attributeOutput != nil && attributeOutput.UserData != nil && attributeOutput.UserData.Value != nil {
+					userData, decodeErr := base64.StdEncoding.DecodeString(*attributeOutput.UserData.Value)
+					if decodeErr != nil {
+						log.Printf("Error decoding user data for instance %s: %v", instanceID, decodeErr)
+						return
+					}
+
+					mu.Lock()
+					outputPairs = append(outputPairs, DataOutputPair{
+						Data:      userData,
+						OutputDir: instanceID,
+					})
+
+					fmt.Println("User data collected")
+					mu.Unlock()
+				} else {
+					fmt.Println("User Data is Empty")
+				}
+			}(instance)
 		}
 	}
 
+	wg.Wait() // Wait for all goroutines to complete
 	return outputPairs, nil
 }
