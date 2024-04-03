@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -49,16 +50,19 @@ func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 				Attribute:  "userData",
 				InstanceId: aws.String(instanceID),
 			})
+
 			if err != nil {
 				log.Fatalf("Error describing instance attributes for %s: %v", instanceID, err)
 			}
-
-			if attributeOutput.UserData != nil {
+			fmt.Println(attributeOutput)
+			if attributeOutput != nil && attributeOutput.UserData != nil {
 				userData := *attributeOutput.UserData.Value
 				outputPairs = append(outputPairs, DataOutputPair{
 					Data:      []byte(userData),
 					OutputDir: instanceID,
 				})
+			} else {
+				fmt.Println("Something wrong with the attributeOutput")
 			}
 		}
 	}
