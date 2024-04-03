@@ -55,7 +55,7 @@ func (p AWSProvider) FetchData() ([]DataOutputPair, error) {
 				log.Fatalf("Error describing instance attributes for %s: %v", instanceID, err)
 			}
 			fmt.Println(attributeOutput)
-			if attributeOutput != nil && attributeOutput.UserData != nil {
+			if attributeOutput != nil && attributeOutput.UserData != nil && attributeOutput.UserData.Value != nil {
 				userData := *attributeOutput.UserData.Value
 				outputPairs = append(outputPairs, DataOutputPair{
 					Data:      []byte(userData),
