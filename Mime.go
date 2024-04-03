@@ -19,7 +19,8 @@ type MimeAttachment struct {
 }
 
 func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
-	boundary, err := extractBoundary(data)
+	mimeData, err := decode(data)
+	boundary, err := extractBoundary(mimeData)
 	if err != nil {
 		return nil, errFailedToExtractMimeBoundary
 	}
