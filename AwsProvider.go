@@ -42,18 +42,17 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 		return nil, fmt.Errorf("error describing instances: %w", err)
 	}
 
-	var (
-		outputPairs []DataOutputPair
-		wg          sync.WaitGroup
-		mu          sync.Mutex // Protects outputPairs
-	)
+	tasks := make(chan types.Instance, 100) // Channel for tasks
+	var outputPairs []DataOutputPair
+	var wg sync.WaitGroup
+	var mu sync.Mutex // Protects outputPairs
 
-	for _, reservation := range instancesOutput.Reservations {
-		for _, instance := range reservation.Instances {
-			wg.Add(1)
-			go func(instance types.Instance) {
-				defer wg.Done()
-
+	// Start a fixed number of workers
+	for w := 0; w < 10; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for instance := range tasks {
 				instanceID := *instance.InstanceId
 				attributeOutput, err := p.client.DescribeInstanceAttribute(context.TODO(), &ec2.DescribeInstanceAttributeInput{
 					Attribute:  types.InstanceAttributeNameUserData,
@@ -61,16 +60,15 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 				})
 
 				if err != nil {
-					// Log the error; adjust error handling as necessary for your application.
 					log.Printf("Error describing instance attributes for %s: %v", instanceID, err)
-					return // Proceed with the next iteration.
+					continue // Skip this instance on error
 				}
 
 				if attributeOutput != nil && attributeOutput.UserData != nil && attributeOutput.UserData.Value != nil {
 					userData, decodeErr := base64.StdEncoding.DecodeString(*attributeOutput.UserData.Value)
 					if decodeErr != nil {
 						log.Printf("Error decoding user data for instance %s: %v", instanceID, decodeErr)
-						return
+						continue
 					}
 
 					mu.Lock()
@@ -78,16 +76,24 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 						Data:      userData,
 						OutputDir: instanceID,
 					})
-
 					fmt.Println("User data collected")
 					mu.Unlock()
 				} else {
-					fmt.Println("User Data is Empty")
+					fmt.Println("User data was empty")
 				}
-			}(instance)
-		}
+			}
+		}()
 	}
 
-	wg.Wait() // Wait for all goroutines to complete
+	// Enqueue tasks
+	for _, reservation := range instancesOutput.Reservations {
+		for _, instance := range reservation.Instances {
+			tasks <- instance
+		}
+	}
+	close(tasks) // Close channel to signal workers to stop
+
+	wg.Wait() // Wait for all workers to finish processing
+
 	return outputPairs, nil
 }
