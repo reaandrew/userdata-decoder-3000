@@ -31,6 +31,7 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 			if err == io.EOF {
 				break // End of the stream, no more parts
 			}
+
 			return nil, fmt.Errorf("error reading part: %s", err) // Actual error reading part
 		}
 

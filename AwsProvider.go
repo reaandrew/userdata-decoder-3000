@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -65,15 +64,11 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 				}
 
 				if attributeOutput != nil && attributeOutput.UserData != nil && attributeOutput.UserData.Value != nil {
-					userData, decodeErr := base64.StdEncoding.DecodeString(*attributeOutput.UserData.Value)
-					if decodeErr != nil {
-						log.Printf("Error decoding user data for instance %s: %v", instanceID, decodeErr)
-						continue
-					}
+					userData := *attributeOutput.UserData.Value
 
 					mu.Lock()
 					outputPairs = append(outputPairs, DataOutputPair{
-						Data:      userData,
+						Data:      []byte(userData),
 						OutputDir: instanceID,
 					})
 					fmt.Println("User data collected")
