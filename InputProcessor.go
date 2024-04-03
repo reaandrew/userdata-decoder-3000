@@ -29,13 +29,32 @@ func (inputProcessor InputProcessor) writePlainUserDataFile(input DataOutputPair
 func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 	for _, input := range inputs {
 		decoded, err := decode(input.Data)
-
 		if err != nil {
-			return inputProcessor.writePlainUserDataFile(input)
+			fmt.Println(fmt.Sprintf("There was an error decoding the base64 content %v", err))
+			outputPath := filepath.Join(inputProcessor.config.outputDir, input.OutputDir)
+			fullPath := filepath.Join(outputPath, "userdata")
+			err := os.MkdirAll(path.Dir(fullPath), 0755)
+			if err != nil {
+				return fmt.Errorf("error creating output directories: %w", err)
+			}
+			err = os.WriteFile(fullPath, input.Data, 0644)
+			if err != nil {
+				return fmt.Errorf("error writing file: %w", err)
+			}
 		} else {
 			attachments, err := ExtractMimeAttachmentsFromBytes(decoded)
 			if err != nil {
-				return inputProcessor.writePlainUserDataFile(input)
+				fmt.Println("There was an error extracting the mime attachments")
+				outputPath := filepath.Join(inputProcessor.config.outputDir, input.OutputDir)
+				fullPath := filepath.Join(outputPath, "userdata")
+				err := os.MkdirAll(path.Dir(fullPath), 0755)
+				if err != nil {
+					return fmt.Errorf("error creating output directories: %w", err)
+				}
+				err = os.WriteFile(fullPath, decoded, 0644)
+				if err != nil {
+					return fmt.Errorf("error writing file: %w", err)
+				}
 			} else {
 				outputPath := filepath.Join(inputProcessor.config.outputDir, input.OutputDir)
 
