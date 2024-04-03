@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path"
@@ -74,6 +75,20 @@ func ExtractCloudConfig(attachments []MimeAttachment, outputDir string) error {
 				return fmt.Errorf("failed to save write files: %w", err)
 			}
 		} else {
+			filename := uuid.New().String()
+			if strings.Contains(attachment.ContentType, "text/x-shellscript") {
+				filename = filename + ".sh"
+			}
+
+			fullPath := filepath.Join(outputDir, filename)
+			err := os.MkdirAll(path.Dir(fullPath), 0755)
+			if err != nil {
+				return fmt.Errorf("error creating output directories: %w", err)
+			}
+			err = os.WriteFile(fullPath, attachment.Content, 0644)
+			if err != nil {
+				return fmt.Errorf("error writing file: %w", err)
+			}
 			fmt.Printf(fmt.Sprintf("Unhandled Content Type: %v", attachment.ContentType))
 		}
 	}

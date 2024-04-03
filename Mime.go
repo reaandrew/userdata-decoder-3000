@@ -19,8 +19,7 @@ type MimeAttachment struct {
 }
 
 func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
-	mimeData, err := decode(data)
-	boundary, err := extractBoundary(mimeData)
+	boundary, err := extractBoundary(data)
 	if err != nil {
 		return nil, errFailedToExtractMimeBoundary
 	}
@@ -74,49 +73,5 @@ func extractBoundary(data []byte) (string, error) {
 }
 
 func ExtractMimeAttachmentsFromBytes(decoded []byte) (attachments []MimeAttachment, err error) {
-	//boundary, err := extractBoundary(decoded)
-	//if err != nil {
-	//	return []MimeAttachment{}, errFailedToExtractMimeBoundary
-	//}
-	//
-	//reader := multipart.NewReader(bytes.NewReader(decoded), boundary)
-	//
-	//for {
-	//	part, err := reader.NextPart()
-	//	if err == io.EOF {
-	//		break
-	//	}
-	//	if err != nil {
-	//		log.Fatal("Error reading part: ", err)
-	//	}
-	//
-	//	contentType := part.Header.Get("Content-Type")
-	//	if contentType == "" {
-	//		contentType = "application/octet-stream"
-	//	}
-	//
-	//	content, err := io.ReadAll(part)
-	//	if err != nil {
-	//		log.Fatal("Error reading content: ", err)
-	//	}
-	//
-	//	encoding := part.Header.Get("Content-Transfer-Encoding")
-	//	if encoding == "base64" {
-	//		decoded, err := base64.StdEncoding.DecodeString(string(content))
-	//		if err != nil {
-	//			log.Fatal("Error decoding base64: ", err)
-	//		}
-	//		content = decoded
-	//	}
-	//
-	//	attachment := MimeAttachment{
-	//		ContentType: contentType,
-	//		Content:     content,
-	//	}
-	//
-	//	attachments = append(attachments, attachment)
-	//}
-	//
-	//return attachments, err
 	return decodeMimAttachments(decoded)
 }
