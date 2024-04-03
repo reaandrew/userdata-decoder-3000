@@ -21,17 +21,17 @@ type ec2ClientAPI interface {
 	DescribeInstanceAttribute(ctx context.Context, params *ec2.DescribeInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceAttributeOutput, error)
 }
 
-func NewAwsProvider(client ec2ClientAPI) AWSProvider {
-	return AWSProvider{client: client}
+func NewAwsProvider(client ec2ClientAPI) *AWSProvider {
+	return &AWSProvider{client: client}
 }
 
-func NewDefaultAwsProvider() AWSProvider {
+func NewDefaultAwsProvider() *AWSProvider {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	return AWSProvider{
+	return &AWSProvider{
 		client: ec2.NewFromConfig(cfg),
 	}
 }
