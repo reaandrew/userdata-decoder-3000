@@ -21,7 +21,7 @@ type MimeAttachment struct {
 func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
 	boundary, err := extractBoundary(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get boundary: %s", err)
+		return nil, errFailedToExtractMimeBoundary
 	}
 
 	reader := multipart.NewReader(bytes.NewReader(data), boundary)
