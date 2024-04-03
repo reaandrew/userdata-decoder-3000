@@ -44,7 +44,6 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 		} else {
 			attachments, err := ExtractMimeAttachmentsFromBytes(decoded)
 			if err != nil {
-				fmt.Println("There was an error extracting the mime attachments")
 				outputPath := filepath.Join(inputProcessor.config.outputDir, input.OutputDir)
 				fullPath := filepath.Join(outputPath, "userdata")
 				err := os.MkdirAll(path.Dir(fullPath), 0755)

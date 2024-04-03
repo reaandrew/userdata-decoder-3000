@@ -41,6 +41,16 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 		return nil, fmt.Errorf("error describing instances: %w", err)
 	}
 
+	instanceCount := 0
+
+	for _, reservation := range instancesOutput.Reservations {
+		for range reservation.Instances {
+			instanceCount++
+		}
+	}
+
+	fmt.Printf("Processing %d instances... \n", instanceCount)
+
 	tasks := make(chan types.Instance, 100) // Channel for tasks
 	var outputPairs []DataOutputPair
 	var wg sync.WaitGroup
@@ -71,10 +81,7 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 						Data:      []byte(userData),
 						OutputDir: instanceID,
 					})
-					fmt.Println("User data collected")
 					mu.Unlock()
-				} else {
-					fmt.Println("User data was empty")
 				}
 			}
 		}()

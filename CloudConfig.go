@@ -89,7 +89,6 @@ func ExtractCloudConfig(attachments []MimeAttachment, outputDir string) error {
 			if err != nil {
 				return fmt.Errorf("error writing file: %w", err)
 			}
-			fmt.Printf(fmt.Sprintf("Unhandled Content Type: %v", attachment.ContentType))
 		}
 	}
 	return nil
