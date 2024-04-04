@@ -30,5 +30,5 @@ func TestReturnsAwsProvider(t *testing.T) {
 	}.getProvider()
 
 	assert.Nil(t, err)
-	assert.IsType(t, AWSProvider{}, provider)
+	assert.IsType(t, &AWSProvider{}, provider)
 }

@@ -30,3 +30,22 @@ jobs:
       - name: Build Distribution
         working-directory: html_client
         run: npm run build
+
+      - name: Terraform Init User Data 3000
+        run: terraform init
+        working-directory: ./html_client
+
+      - name: Terraform Apply User Data 3000
+        run: terraform apply -auto-approve
+        working-directory: ./html_client
+
+      - name: Invalidate Cloud Front
+        run: |
+          DOMAIN_NAME="userdata-decoder-3000.andrewrea.co.uk"
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items[0] == '$DOMAIN_NAME'].Id" --output text)
+
+          if [ "$DISTRIBUTION_ID" != "" ]; then
+              aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+          else
+              echo "No distribution found for domain: $DOMAIN_NAME"
+          fi
