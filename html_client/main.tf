@@ -70,9 +70,9 @@ resource "aws_s3_bucket_policy" "cdn-oac-bucket-policy" {
 }
 
 resource "aws_s3_object" "file" {
-  for_each     = fileset(path.module, "content/**/*.{html,css,js,png,jpg,woff,woff2,ttf,svg,map}")
+  for_each     = fileset(path.module, "dist/**/*.{html,css,js,png,jpg,woff,woff2,ttf,svg,map}")
   bucket       = aws_s3_bucket.bucket.id
-  key          = replace(each.value, "/^content//", "")
+  key          = replace(each.value, "/^dist//", "")
   source       = each.value
   content_type = lookup(local.content_types, regex("\\.[^.]+$", each.value), null)
   etag         = filemd5(each.value)
