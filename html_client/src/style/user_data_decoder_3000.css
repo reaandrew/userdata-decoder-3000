@@ -1,0 +1,16 @@
+body{
+    background-color: #010d17;
+    font-size: 0.9em;
+}
+.constrained-height {
+    max-height: 300px; /* Set this to your desired maximum height */
+    width: auto;
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove inline display */
+    margin-left: auto; /* Center image horizontally */
+    margin-right: auto; /* Center image horizontally */
+}
+
+li{
+    cursor: pointer !important;
+}

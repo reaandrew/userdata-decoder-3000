@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userdata Decoder 3000</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/pako@2.0.4/dist/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="scripts/user_data_decoder_3000.js"></script>
+    <script src="scripts/ui.js"></script>
+    <link rel="stylesheet" href="style/user_data_decoder_3000.css">
+</head>
+<body>
+
+<div class="container-fluid py-5">
+    <div class="row">
+        <div class="col">
+            <img src="images/logo.png" class="img-fluid d-block mx-auto constrained-height" alt="Userdata Decoder 3000"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control yellow" placeholder="Paste base64 encoded data here" id="base64_input">
+                        <button class="btn btn-primary yellow" type="button" id="decode_button">Decode</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <ul class="list-group" id="file_list">
+                    </ul>
+                </div>
+                <div class="col-md-8 mt-4">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10 text-light">
+<pre id="file_content">
+</pre>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let ui = user_data_decoder_3000_ui()
+        ui.attach({
+            button_id: 'decode_button',
+            input_id: 'base64_input',
+            file_list_id: 'file_list',
+            file_content_id: 'file_content'
+        })
+    });
+</script>
+
+</body>
+</html>

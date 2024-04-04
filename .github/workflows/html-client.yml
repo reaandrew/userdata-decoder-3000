@@ -1,0 +1,32 @@
+name: User Data Decoder 3000 Html Client
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - html_client/**
+
+env:
+  AWS_REGION : eu-west-2 #Change to reflect your Region
+  TF_LOG: INFO
+  AWS_SAM_LOCAL : true
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: write    # This is required for actions/checkout
+
+jobs:
+  deploy_website:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        working-directory: html_client
+        run: npm install
+
+      - name: Build Distribution
+        working-directory: html_client
+        run: npm run build

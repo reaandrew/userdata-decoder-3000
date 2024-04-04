@@ -1,46 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Instance User Data Decoder</title>
-    <script src="https://cdn.jsdelivr.net/npm/pako@2.0.4/dist/pako.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <style type="text/css">
-        body{
-            background-color: #010d17;
-        }
-        .input{
-            border: yellow 5px solid;
-            padding:10px;
-            border-radius: 10px;
-            font-family: "Courier 10 Pitch";
-            color: #fa6132;
-            font-weight: bold;
-        }
-        .button{
-            border: #81d8ef 5px solid;
-            padding:10px;
-            border-radius: 10px;
-            font-family: "Courier 10 Pitch";
-            color: #fa6132;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-
-
-<img src="draft_1.png" height="300" width="300"/>
-<textarea id="input" rows="10" cols="100" class="input"></textarea>
-
-<button id="decode_button" class="button">Decode</button>
-<script>
-
+function user_data_decoder_3000(){
     // Utility function to try decompressing with pako (gzip)
     function tryDecompress(data) {
         try {
-            const decompressed = pako.inflate(data, { to: 'string' });
-            return decompressed;
+            return pako.inflate(data, {to: 'string'});
         } catch (e) {
             // Return original data if decompression fails
             return data;
@@ -95,7 +57,7 @@
         }
     }
 
-    // Placeholder for checking if a string is base64 encoded
+// Placeholder for checking if a string is base64 encoded
     function isBase64Encoded(str) {
         try {
             return btoa(atob(str)) === str;
@@ -120,8 +82,8 @@
             // If decoded content is expected to be YAML (based on Content-Type)
             if (headers['content-type'] && headers['content-type'].includes('cloud-config')) {
                 // Process as cloud-init YAML content
-                const files = processCloudInit(decodedBody); // Use your existing processCloudInit function
-                return files;
+                 // Use your existing processCloudInit function
+                return processCloudInit(decodedBody);
             }
             // Return decoded content directly if not cloud-init
             return [{ path: "userdata", content: decodedBody }];
@@ -131,7 +93,7 @@
         return [{ path: "userdata", content: bodyPart }];
     }
 
-    // Function to process cloud-init YAML content
+// Function to process cloud-init YAML content
     function processCloudInit(yamlContent) {
         let files = [];
         try {
@@ -161,36 +123,10 @@
         return files.length ? files : [{ path: "userdata", content: yamlContent }];
     }
 
-
-    let button = document.getElementById("decode_button")
-    button.addEventListener("click", () => {
-        input_data = document.getElementById("input").value
-        let value = atob(input_data)
-        value = stringToUint8Array(value);
-        value = tryDecompress(value)
-        value = tryParseMultipartMime(value);
-
-        if (Array.isArray(value) && value.length > 0) {
-            value.forEach(partContent => {
-                let processedFiles;
-
-                // Simplistic check to decide if it's cloud-init
-                if (partContent.includes("text/cloud-config")) {
-                    processedFiles = parseMimePart(partContent);
-                } else {
-                    // If not cloud-init, treat as userdata file
-                    let content = stringToUint8Array(partContent);
-                    content = tryDecompress(content); // Assume tryDecompress can handle string inputs correctly
-                    processedFiles = [{ path: "userdata", content: content }];
-                }
-
-                // Processed files now contains objects with path and content
-                console.log(processedFiles);
-            });
-        } else {
-            console.log(value)
-        }
-    })
-</script>
-</body>
-</html>
+    return {
+        tryDecompress,
+        stringToUint8Array,
+        tryParseMultipartMime,
+        parseMimePart,
+    }
+}
