@@ -79,7 +79,7 @@ resource "aws_s3_object" "file" {
 }
 
 resource "aws_cloudfront_origin_access_control" "hosting" {
-  name                              = var.domain_name
+  name                              = var.sub_domain_name
   description                       = "UserData Decoder 3000 Website Policy"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
@@ -156,7 +156,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
-  aliases = [var.domain_name]
+  aliases = [var.sub_domain_name]
 
   default_cache_behavior {
     cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
@@ -166,25 +166,6 @@ resource "aws_cloudfront_distribution" "distribution" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = var.sub_domain_name
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers_policy.id
-  }
-
-  ordered_cache_behavior {
-    allowed_methods        = ["DELETE","GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET","HEAD"]
-    path_pattern           = "/api/*"
-    target_origin_id       = "apigw"
-    viewer_protocol_policy = "redirect-to-https"
-
-    default_ttl = 0
-    min_ttl = 0
-    max_ttl = 0
-
-    forwarded_values {
-      query_string = true
-      cookies {
-        forward = "all"
-      }
-    }
   }
 
   depends_on = [aws_s3_bucket.bucket]
