@@ -36,7 +36,8 @@ func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
 }
 
 func ReadCloudConfigFrom(attachment MimeAttachment) (CloudConfig, error) {
-	if !strings.Contains(attachment.ContentType, "text/cloud-config") {
+	if !strings.Contains(attachment.ContentType, "text/cloud-config") ||
+		!strings.Contains(string(attachment.Content), "#cloud-config") {
 		return CloudConfig{}, fmt.Errorf("not a cloud-config content type")
 	}
 
