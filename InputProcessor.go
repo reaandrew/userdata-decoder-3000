@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 type InputProcessor struct {
@@ -68,18 +69,22 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 					return fmt.Errorf("error writing file: %w", err)
 				}
 			} else {
-				err = ExtractCloudConfig(attachments, outputPath)
-				if err != nil {
-					return fmt.Errorf("failed to save write files: %w", err)
-				}
 				for _, attachment := range attachments {
-					fullPath := filepath.Join(outputPath, attachment.Filename)
-					err := os.MkdirAll(path.Dir(fullPath), 0755)
-					if err != nil {
-						return fmt.Errorf("error creating output directories: %w", err)
+					if strings.Contains(attachment.ContentType, "text/cloud-config") ||
+						strings.Contains(string(attachment.Content), "#cloud-config") {
+						err = ExtractCloudConfig(attachment, outputPath)
+						if err != nil {
+							return fmt.Errorf("failed to save write files: %w", err)
+						}
+					} else {
+						fullPath := filepath.Join(outputPath, attachment.Filename)
+						err := os.MkdirAll(path.Dir(fullPath), 0755)
+						if err != nil {
+							return fmt.Errorf("error creating output directories: %w", err)
+						}
+						decodedContent, err := decode(attachment.Content)
+						err = os.WriteFile(fullPath, decodedContent, 0644)
 					}
-					decodedContent, err := decode(attachment.Content)
-					err = os.WriteFile(fullPath, decodedContent, 0644)
 				}
 			}
 		}

@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 )
 
 type WriteFile struct {
@@ -60,34 +58,15 @@ func ReadCloudConfigFrom(attachment MimeAttachment) (CloudConfig, error) {
 
 }
 
-func ExtractCloudConfig(attachments []MimeAttachment, outputDir string) error {
-	for _, attachment := range attachments {
-		if strings.Contains(attachment.ContentType, "text/cloud-config") ||
-			strings.Contains(string(attachment.Content), "#cloud-config") {
-			cloudConfig, err := ReadCloudConfigFrom(attachment)
-			if err != nil {
-				return fmt.Errorf("failed to extract cloud config write files: %w", err)
-			}
-
-			if err := cloudConfig.SaveWriteFiles(outputDir); err != nil {
-				return fmt.Errorf("failed to save write files: %w", err)
-			}
-		} else {
-			filename := uuid.New().String()
-			if strings.Contains(attachment.ContentType, "text/x-shellscript") {
-				filename = filename + ".sh"
-			}
-
-			fullPath := filepath.Join(outputDir, filename)
-			err := os.MkdirAll(path.Dir(fullPath), 0755)
-			if err != nil {
-				return fmt.Errorf("error creating output directories: %w", err)
-			}
-			err = os.WriteFile(fullPath, attachment.Content, 0644)
-			if err != nil {
-				return fmt.Errorf("error writing file: %w", err)
-			}
-		}
+func ExtractCloudConfig(attachment MimeAttachment, outputDir string) error {
+	cloudConfig, err := ReadCloudConfigFrom(attachment)
+	if err != nil {
+		return fmt.Errorf("failed to extract cloud config write files: %w", err)
 	}
+
+	if err := cloudConfig.SaveWriteFiles(outputDir); err != nil {
+		return fmt.Errorf("failed to save write files: %w", err)
+	}
+
 	return nil
 }
