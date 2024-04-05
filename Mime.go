@@ -15,7 +15,6 @@ var errFailedToExtractMimeBoundary = errors.New("failed to get MIME boundary")
 
 type MimeAttachment struct {
 	ContentType string
-	Filename    string
 	Content     []byte
 }
 
@@ -32,31 +31,20 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 			if err == io.EOF {
 				break // End of the stream, no more parts
 			}
+
 			return nil, fmt.Errorf("error reading part: %s", err) // Actual error reading part
 		}
 
+		// Assuming extractContentType and io.ReadAll are defined or replaced appropriately
 		contentType := part.Header.Get("Content-Type")
-		disposition, _, err := mime.ParseMediaType(part.Header.Get("Content-Disposition"))
-		if err != nil {
-			return nil, fmt.Errorf("error parsing content disposition: %s", err)
-		}
 
 		content, err := io.ReadAll(part)
 		if err != nil {
 			return nil, fmt.Errorf("error reading part content: %s", err)
 		}
 
-		filename := ""
-		if disposition == "attachment" {
-			_, params, err := mime.ParseMediaType(part.Header.Get("Content-Disposition"))
-			if err == nil {
-				filename = params["filename"]
-			}
-		}
-
 		attachments = append(attachments, MimeAttachment{
 			ContentType: contentType,
-			Filename:    filename,
 			Content:     content,
 		})
 
