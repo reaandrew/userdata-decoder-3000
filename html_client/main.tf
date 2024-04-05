@@ -187,7 +187,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
-  depends_on = [aws_s3_bucket.bucket, aws_route53_record.www]
+  depends_on = [aws_s3_bucket.bucket]
 }
 
 data "aws_route53_zone" "selected" {
