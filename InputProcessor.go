@@ -42,7 +42,7 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 		if rawErr != nil {
 			return fmt.Errorf("error creating output directories: %w", rawErr)
 		}
-		err = os.WriteFile(rawPath, decoded, 0644)
+		rawErr = os.WriteFile(rawPath, decoded, 0644)
 
 		if err != nil {
 			fmt.Println(fmt.Sprintf("There was an error decoding the base64 content %v", err))
