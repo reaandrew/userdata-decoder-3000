@@ -66,34 +66,24 @@ window.user_data_decoder_3000 = function(){
         }
     }
 
-    // function parseMimePart(partContent) {
-    //     // Split headers and body
-    //     const [headersPart, bodyPart] = partContent.split('\n\n', 2);
-    //     const headers = headersPart.split('\n').reduce((acc, current) => {
-    //         const [key, value] = current.split(':', 2).map(s => s.trim());
-    //         acc[key.toLowerCase()] = value; // Use lowercase for header keys for easier matching
-    //         return acc;
-    //     }, {});
-    //
-    //     // Check for base64 encoding
-    //     if (headers['content-transfer-encoding'] === 'base64') {
-    //         // Decode base64 content
-    //         const decodedBody = atob(bodyPart.trim());
-    //         // If decoded content is expected to be YAML (based on Content-Type)
-    //         if (headers['content-type'] && headers['content-type'].includes('cloud-config')) {
-    //             // Process as cloud-init YAML content
-    //              // Use your existing processCloudInit function
-    //             return processCloudInit(decodedBody);
-    //         }else{
-    //
-    //         }
-    //         // Return decoded content directly if not cloud-init
-    //         return [{ path: "userdata", content: decodedBody }];
-    //     }
-    //
-    //     // Return raw body if not base64 encoded
-    //     return [{ path: "userdata", content: bodyPart }];
-    // }
+    function parseNonMimeContent(content){
+        if (isBase64Encoded(content)) {
+            // Decode base64
+            content = atob(content);
+        }
+        content = tryDecompress(content);
+        try {
+            content = new TextDecoder("utf-8").decode(content);
+        }catch(err){}
+        if (content.includes("#cloud-config")) {
+            // Process as cloud-init YAML content
+            return processCloudInit(content);
+        } else  {
+            // Handle shell scripts
+            const filename = "userdata";
+            return [{ path: filename, content: content }];
+        } // Add other content types if needed
+    }
 
     function parseMimePart(partContent) {
         // Split headers and body
@@ -112,7 +102,7 @@ window.user_data_decoder_3000 = function(){
         // The first section is headers, and the rest is considered as the body.
         // This handles cases where the body might start with what looks like a separator.
         const headersPart = sections.shift();
-        const bodyPart = sections.join('\n\n'); // Rejoin the rest in case the body itself contained \n\n
+        let bodyPart = sections.join('\n\n'); // Rejoin the rest in case the body itself contained \n\n
 
         const headers = headersPart.split('\n').reduce((acc, current) => {
             const [key, value] = current.split(':', 2).map(s => s.trim());
@@ -123,30 +113,30 @@ window.user_data_decoder_3000 = function(){
         // Check for base64 encoding
         if (headers['content-transfer-encoding'] === 'base64') {
             // Decode base64 content
-            const decodedBody = atob(bodyPart.trim());
-
-            // Convert to Uint8Array for potential gzip decompression
-            let contentArray = stringToUint8Array(decodedBody);
-
-            // Try decompressing (in case it's gzipped), or use as is
-            contentArray = tryDecompress(contentArray);
-
-            // Convert Uint8Array back to string
-            const content = new TextDecoder("utf-8").decode(contentArray);
-
-            // Determine the type of content based on Content-Type header
-            if (headers['content-type']) {
-                if (headers['content-type'].includes('cloud-config') ||
-                    content.includes("#cloud-config")) {
-                    // Process as cloud-init YAML content
-                    return processCloudInit(content);
-                } else  {
-                    // Handle shell scripts
-                    const filename = headers['content-disposition'] ? headers['content-disposition'].split('filename="')[1].split('"')[0] : crypto.randomUUID();
-                    return [{ path: filename, content }];
-                } // Add other content types if needed
-            }
+            bodyPart = atob(bodyPart.trim());
         }
+        // Convert to Uint8Array for potential gzip decompression
+        let contentArray = stringToUint8Array(bodyPart);
+
+        // Try decompressing (in case it's gzipped), or use as is
+        contentArray = tryDecompress(contentArray);
+
+        // Convert Uint8Array back to string
+        const content = new TextDecoder("utf-8").decode(contentArray);
+
+        // Determine the type of content based on Content-Type header
+        if (headers['content-type']) {
+            if (headers['content-type'].includes('cloud-config') ||
+                content.includes("#cloud-config")) {
+                // Process as cloud-init YAML content
+                return processCloudInit(content);
+            } else  {
+                // Handle shell scripts
+                const filename = headers['content-disposition'] ? headers['content-disposition'].split('filename="')[1].split('"')[0] : crypto.randomUUID();
+                return [{ path: filename, content }];
+            } // Add other content types if needed
+        }
+
 
         // Return raw body if not base64 encoded
         return [{ path: "userdata", content: bodyPart }];
@@ -189,5 +179,6 @@ window.user_data_decoder_3000 = function(){
         stringToUint8Array,
         tryParseMultipartMime,
         parseMimePart,
+        parseNonMimeContent
     }
 }

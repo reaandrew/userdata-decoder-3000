@@ -176,16 +176,6 @@ write_files:
 			attachments:   []MimeAttachment{},
 			expectedFiles: map[string]string{},
 		},
-		//{
-		//	name: "Attachment with different content type",
-		//	attachments: []MimeAttachment{
-		//		{
-		//			ContentType: "text/plain",
-		//			Content:     []byte("Some random content"),
-		//		},
-		//	},
-		//	expectedFiles: map[string]string{},
-		//},
 		{
 			name: "ReadCloudConfigFrom returns an error",
 			attachments: []MimeAttachment{

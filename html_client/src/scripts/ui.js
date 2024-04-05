@@ -9,6 +9,9 @@ window.user_data_decoder_3000_ui = function(){
             value = decoder3000.stringToUint8Array(value);
             value = decoder3000.tryDecompress(value)
             let rawDecoded = value;
+            try {
+                rawDecoded = new TextDecoder("utf-8").decode(rawDecoded);
+            }catch(err){}
             value = decoder3000.tryParseMultipartMime(value);
 
             let fileList = document.getElementById(config.file_list_id);
@@ -19,56 +22,48 @@ window.user_data_decoder_3000_ui = function(){
             processedFiles.push({path: "raw_base64decoded", content:rawDecoded});
             if (Array.isArray(value) && value.length > 0) {
                 value.forEach(partContent => {
-                    // Simplistic check to decide if it's cloud-init
-                    // if (partContent.includes("text/cloud-config")) {
-                    //     processedFiles = decoder3000.parseMimePart(partContent);
-                    // } else {
-                    //     console.log(partContent)
-                    //     // If not cloud-init, treat as userdata file
-                    //     let content = decoder3000.stringToUint8Array(partContent);
-                    //     content = decoder3000.tryDecompress(content); // Assume tryDecompress can handle string inputs correctly
-                    //     processedFiles.push({ path: "userdata", content: content });
-                    // }
-                    let file_parts =  decoder3000.parseMimePart(partContent);
+                    let file_parts = decoder3000.parseMimePart(partContent);
                     processedFiles = processedFiles.concat(file_parts);
-
                 });
-                processedFiles.forEach(function(obj, index) {
-                    let li = document.createElement("li");
-                    li.className = "list-group-item";
-                    li.role = "button"
-                    if (index == 0){
-                        li.classList.add("active")
-                        li.classList.add("link")
-                        file_content.innerHTML = obj.content;
-                    }
-                    // Optionally, add the 'blue' class to all items or based on a condition
-                    li.textContent = obj.path;
+            }else {
+                let files = decoder3000.parseNonMimeContent(value);
+                processedFiles = processedFiles.concat(files);
+            }
 
-                    // Store the object's contents in a custom attribute, e.g., 'data-info'
-                    // Note: Custom attributes should be all lowercase
-                    li.setAttribute("data-info", obj.content);
+            processedFiles.forEach(function(obj, index) {
+                let li = document.createElement("li");
+                li.className = "list-group-item";
+                li.role = "button"
+                if (index == 0){
+                    li.classList.add("active")
+                    li.classList.add("link")
+                    file_content.innerHTML = obj.content;
+                }
+                // Optionally, add the 'blue' class to all items or based on a condition
+                li.textContent = obj.path;
 
-                    // Add click event listener to list item
-                    li.addEventListener('click', function() {
-                        // Remove 'active' class from all list items
-                        document.querySelectorAll('.list-group-item').forEach(function(el) {
-                            el.classList.remove('active');
-                        });
+                // Store the object's contents in a custom attribute, e.g., 'data-info'
+                // Note: Custom attributes should be all lowercase
+                li.setAttribute("data-info", obj.content);
 
-                        // Add 'active' class to clicked list item
-                        this.classList.add('active');
-
-                        // Set the file_content to the data-info attribute of the clicked list item
-
-                        file_content.innerHTML = this.getAttribute('data-info');
+                // Add click event listener to list item
+                li.addEventListener('click', function() {
+                    // Remove 'active' class from all list items
+                    document.querySelectorAll('.list-group-item').forEach(function(el) {
+                        el.classList.remove('active');
                     });
 
-                    fileList.appendChild(li);
+                    // Add 'active' class to clicked list item
+                    this.classList.add('active');
+
+                    // Set the file_content to the data-info attribute of the clicked list item
+
+                    file_content.innerHTML = this.getAttribute('data-info');
                 });
-            } else {
-                console.log(value)
-            }
+
+                fileList.appendChild(li);
+            });
+
         })
     }
 
