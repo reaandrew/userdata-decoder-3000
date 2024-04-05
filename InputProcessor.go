@@ -37,12 +37,12 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 		err = os.WriteFile(fullPath, input.Data, 0644)
 
 		decoded, err := decode(input.Data)
-		//rawPath := filepath.Join(outputPath, "raw_base64Decoded")
-		//rawErr := os.MkdirAll(path.Dir(rawPath), 0755)
-		//if rawErr != nil {
-		//	return fmt.Errorf("error creating output directories: %w", rawErr)
-		//}
-		//rawErr = os.WriteFile(rawPath, decoded, 0644)
+		rawPath := filepath.Join(outputPath, "raw_base64Decoded")
+		rawErr := os.MkdirAll(path.Dir(rawPath), 0755)
+		if rawErr != nil {
+			return fmt.Errorf("error creating output directories: %w", rawErr)
+		}
+		rawErr = os.WriteFile(rawPath, decoded, 0644)
 
 		if err != nil {
 			fmt.Println(fmt.Sprintf("There was an error decoding the base64 content %v", err))
@@ -72,15 +72,15 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 				if err != nil {
 					return fmt.Errorf("failed to save write files: %w", err)
 				}
-				//for _, attachment := range attachments {
-				//	fullPath := filepath.Join(outputPath, attachment.Filename)
-				//	err := os.MkdirAll(path.Dir(fullPath), 0755)
-				//	if err != nil {
-				//		return fmt.Errorf("error creating output directories: %w", err)
-				//	}
-				//	decodedContent, err := decode(attachment.Content)
-				//	err = os.WriteFile(fullPath, decodedContent, 0644)
-				//}
+				for _, attachment := range attachments {
+					fullPath := filepath.Join(outputPath, attachment.Filename)
+					err := os.MkdirAll(path.Dir(fullPath), 0755)
+					if err != nil {
+						return fmt.Errorf("error creating output directories: %w", err)
+					}
+					decodedContent, err := decode(attachment.Content)
+					err = os.WriteFile(fullPath, decodedContent, 0644)
+				}
 			}
 		}
 	}

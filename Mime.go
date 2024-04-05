@@ -15,7 +15,30 @@ var errFailedToExtractMimeBoundary = errors.New("failed to get MIME boundary")
 
 type MimeAttachment struct {
 	ContentType string
+	Filename    string
 	Content     []byte
+}
+
+func extractFilename(part *multipart.Part) (string, error) {
+	// Retrieve the Content-Disposition header of the current part
+	cdHeader := part.Header.Get("Content-Disposition")
+	if cdHeader == "" {
+		return "", fmt.Errorf("no Content-Disposition header found")
+	}
+
+	// Parse the Content-Disposition header to get disposition type and parameters
+	_, params, err := mime.ParseMediaType(cdHeader)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse Content-Disposition header: %w", err)
+	}
+
+	// The filename parameter should be present in the parameters map
+	filename, found := params["filename"]
+	if !found {
+		return "", fmt.Errorf("filename not found in Content-Disposition header")
+	}
+
+	return filename, nil
 }
 
 func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
@@ -43,8 +66,14 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 			return nil, fmt.Errorf("error reading part content: %s", err)
 		}
 
+		filename, err := extractFilename(part)
+		if err != nil {
+			return nil, fmt.Errorf("error reading part filename: %s", err)
+		}
+
 		attachments = append(attachments, MimeAttachment{
 			ContentType: contentType,
+			Filename:    filename,
 			Content:     content,
 		})
 
