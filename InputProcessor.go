@@ -37,12 +37,12 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 		err = os.WriteFile(fullPath, input.Data, 0644)
 
 		decoded, err := decode(input.Data)
-		rawPath := filepath.Join(outputPath, "raw_base64Decoded")
-		rawErr := os.MkdirAll(path.Dir(rawPath), 0755)
-		if rawErr != nil {
-			return fmt.Errorf("error creating output directories: %w", rawErr)
-		}
-		rawErr = os.WriteFile(rawPath, decoded, 0644)
+		//rawPath := filepath.Join(outputPath, "raw_base64Decoded")
+		//rawErr := os.MkdirAll(path.Dir(rawPath), 0755)
+		//if rawErr != nil {
+		//	return fmt.Errorf("error creating output directories: %w", rawErr)
+		//}
+		//rawErr = os.WriteFile(rawPath, decoded, 0644)
 
 		if err != nil {
 			fmt.Println(fmt.Sprintf("There was an error decoding the base64 content %v", err))
