@@ -91,7 +91,7 @@ resource "aws_cloudfront_origin_access_identity" "hosting" {
 }
 
 resource "aws_cloudfront_response_headers_policy" "security_headers_policy" {
-  name = "my-security-headers-policy"
+  name = "userdata-decoder-3000-security-headers-policy"
 
   custom_headers_config {
     items {
