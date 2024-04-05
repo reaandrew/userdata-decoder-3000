@@ -1,5 +1,5 @@
 
-function user_data_decoder_3000_ui(){
+global.user_data_decoder_3000_ui = function(){
     function attach(config){
         let decoder3000 = user_data_decoder_3000()
         let button = document.getElementById(config.button_id)
@@ -71,5 +71,3 @@ function user_data_decoder_3000_ui(){
         attach
     }
 }
-
-window.user_data_decoder_3000_ui = user_data_decoder_3000_ui;

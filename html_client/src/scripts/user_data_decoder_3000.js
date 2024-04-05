@@ -1,4 +1,4 @@
-function user_data_decoder_3000(){
+global.user_data_decoder_3000 = function(){
     // Utility function to try decompressing with pako (gzip)
     function tryDecompress(data) {
         try {
