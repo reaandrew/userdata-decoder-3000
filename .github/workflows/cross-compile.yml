@@ -33,9 +33,9 @@ jobs:
 
       - name: Cross-Compile for Windows, macOS, and Linux
         run: |
-          env GOOS=windows GOARCH=amd64 go build -o ./build/cloud-startup-data-decoder-windows-amd64.exe
-          env GOOS=darwin GOARCH=amd64 go build -o ./build/cloud-startup-data-decoder-darwin-amd64
-          env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -ldflags '-linkmode external -extldflags "-static"' -o ./build/cloud-startup-data-decoder-linux-amd64
+          env GOOS=windows GOARCH=amd64 go build -o ./build/udd-windows-amd64.exe
+          env GOOS=darwin GOARCH=amd64 go build -o ./build/udd-darwin-amd64
+          env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -ldflags '-linkmode external -extldflags "-static"' -o ./build/udd-linux-amd64
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -73,24 +73,24 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/cloud-startup-data-decoder-windows-amd64.exe
-          asset_name: cloud-startup-data-decoder-windows-amd64.exe
+          asset_path: ./build/udd-windows-amd64.exe
+          asset_name: udd-windows-amd64.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/cloud-startup-data-decoder-darwin-amd64
-          asset_name: cloud-startup-data-decoder-darwin-amd64
+          asset_path: ./build/udd-darwin-amd64
+          asset_name: udd-darwin-amd64
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/cloud-startup-data-decoder-linux-amd64
-          asset_name: cloud-startup-data-decoder-linux-amd64
+          asset_path: ./build/udd-linux-amd64
+          asset_name: udd-linux-amd64
           asset_content_type: application/octet-stream
 
   update-latest-release:

@@ -1,9 +1,17 @@
 
-# Cloud Startup Data Decoder
+# Userdata Decoder 3000
+
+![logo.png](html_client%2Fsrc%2Fimages%2Flogo.png)
 
 ## Description
 
-Cloud Startup Data Decoder decodes cloud instance startup data. It works with AWS and handles both cloud-init and plain text formats. Useful for developers, sysadmins, and cybersecurity roles. Azure and GCP support are on the roadmap.
+User Data Decoder 3000 (name inspiration from Joe Sparkes) decodes cloud instance startup data. It works with AWS and handles both cloud-init and plain text formats. Useful for developers, sysadmins, and cybersecurity roles. Azure and GCP support are on the roadmap.
+
+This tool was developed as a way to check no sensitive data is included in the userdata once it is created and attached to either an EC2 instance or AWS Launch Template.
+
+There is a client side version available too just to serve as a demonstration and quick view of some user data.
+
+## CLI
 
 ### Installation
 
@@ -125,13 +133,13 @@ After you have decoded all the user data for the instances, you can then run ana
 1. Clone the repository
 
 ```
-git clone git@github.com:reaandrew/cloud-startup-data-decoder.git
+git clone git@github.com:reaandrew/userdata-decoder-3000.git
 ```
 
 2. Navigate to the project directory
 
 ```
-cd cloud-startup-data-decoder
+cd userdata-decoder-3000
 ```
 
 3. Build the project
@@ -139,6 +147,13 @@ cd cloud-startup-data-decoder
 ```
 go build
 ```
+
+## Website
+
+[https://userdata-decoder-3000.andrewrea.co.uk/](https://userdata-decoder-3000.andrewrea.co.uk/)
+
+![website_image.png](html_client%2Fsrc%2Fimages%2Fwebsite_image.png)
+
 
 ## Contribution
 

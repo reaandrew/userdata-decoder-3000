@@ -44,8 +44,8 @@ func parseFlags() (config Config, err error) {
 
 	flag.Usage = func() {
 		fmt.Println("Usages:")
-		fmt.Println("  cloud-init-decoder [OPTIONS]             : Specify options for data provider and output directory.")
-		fmt.Println("  cloud-init-decoder [CONTENT_TO_DECODE]   : Specify the content to decode as the first argument.")
+		fmt.Println("  udd [OPTIONS]             : Specify options for data provider and output directory.")
+		fmt.Println("  udd [CONTENT_TO_DECODE]   : Specify the content to decode as the first argument.")
 		fmt.Println("\nOptions:")
 		fmt.Println("  -o, --output-dir: Specify the output directory within your working directory. (default \"output\")")
 		fmt.Println("  -p, --provider:   Specify the data provider (e.g., aws).")
