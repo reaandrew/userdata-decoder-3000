@@ -66,15 +66,16 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 			return nil, fmt.Errorf("error reading part content: %s", err)
 		}
 
-		//filename, err := extractFilename(part)
-		//if err != nil {
-		//	return nil, fmt.Errorf("error reading part filename: %s", err)
-		//}
+		filename, err := extractFilename(part)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("error reading part filename: %s", err)
+		}
 
 		attachments = append(attachments, MimeAttachment{
 			ContentType: contentType,
-			//Filename:    filename,
-			Content: content,
+			Filename:    filename,
+			Content:     content,
 		})
 
 		// Remember to close each part after reading
