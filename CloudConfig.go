@@ -36,11 +36,6 @@ func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
 }
 
 func ReadCloudConfigFrom(attachment MimeAttachment) (CloudConfig, error) {
-	if !strings.Contains(attachment.ContentType, "text/cloud-config") &&
-		!strings.Contains(string(attachment.Content), "#cloud-config") {
-		return CloudConfig{}, fmt.Errorf("not a cloud-config content type")
-	}
-
 	var config CloudConfig
 
 	err := yaml.Unmarshal(attachment.Content, &config)
@@ -62,11 +57,13 @@ func ReadCloudConfigFrom(attachment MimeAttachment) (CloudConfig, error) {
 		})
 	}
 	return CloudConfig{WriteFiles: writeFiles}, err
+
 }
 
 func ExtractCloudConfig(attachments []MimeAttachment, outputDir string) error {
 	for _, attachment := range attachments {
-		if strings.Contains(attachment.ContentType, "text/cloud-config") {
+		if strings.Contains(attachment.ContentType, "text/cloud-config") ||
+			strings.Contains(string(attachment.Content), "#cloud-config") {
 			cloudConfig, err := ReadCloudConfigFrom(attachment)
 			if err != nil {
 				return fmt.Errorf("failed to extract cloud config write files: %w", err)

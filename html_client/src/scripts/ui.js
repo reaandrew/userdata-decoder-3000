@@ -1,5 +1,5 @@
 
-global.user_data_decoder_3000_ui = function(){
+window.user_data_decoder_3000_ui = function(){
     function attach(config){
         let decoder3000 = user_data_decoder_3000()
         let button = document.getElementById(config.button_id)
@@ -8,6 +8,7 @@ global.user_data_decoder_3000_ui = function(){
             let value = atob(input_data)
             value = decoder3000.stringToUint8Array(value);
             value = decoder3000.tryDecompress(value)
+            let rawDecoded = value;
             value = decoder3000.tryParseMultipartMime(value);
 
             let fileList = document.getElementById(config.file_list_id);
@@ -15,18 +16,22 @@ global.user_data_decoder_3000_ui = function(){
             fileList.innerHTML=""
             file_content.innerHTML=""
             let processedFiles = [];
-
+            processedFiles.push({path: "special: raw_base64decoded", content:rawDecoded});
             if (Array.isArray(value) && value.length > 0) {
                 value.forEach(partContent => {
                     // Simplistic check to decide if it's cloud-init
-                    if (partContent.includes("text/cloud-config")) {
-                        processedFiles = decoder3000.parseMimePart(partContent);
-                    } else {
-                        // If not cloud-init, treat as userdata file
-                        let content = decoder3000.stringToUint8Array(partContent);
-                        content = decoder3000.tryDecompress(content); // Assume tryDecompress can handle string inputs correctly
-                        processedFiles.push({ path: "userdata", content: content });
-                    }
+                    // if (partContent.includes("text/cloud-config")) {
+                    //     processedFiles = decoder3000.parseMimePart(partContent);
+                    // } else {
+                    //     console.log(partContent)
+                    //     // If not cloud-init, treat as userdata file
+                    //     let content = decoder3000.stringToUint8Array(partContent);
+                    //     content = decoder3000.tryDecompress(content); // Assume tryDecompress can handle string inputs correctly
+                    //     processedFiles.push({ path: "userdata", content: content });
+                    // }
+                    let file_parts =  decoder3000.parseMimePart(partContent);
+                    processedFiles = processedFiles.concat(file_parts);
+
                 });
                 processedFiles.forEach(function(obj, index) {
                     let li = document.createElement("li");

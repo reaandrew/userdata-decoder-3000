@@ -1,4 +1,4 @@
-global.user_data_decoder_3000 = function(){
+window.user_data_decoder_3000 = function(){
     // Utility function to try decompressing with pako (gzip)
     function tryDecompress(data) {
         try {
@@ -66,6 +66,35 @@ global.user_data_decoder_3000 = function(){
         }
     }
 
+    // function parseMimePart(partContent) {
+    //     // Split headers and body
+    //     const [headersPart, bodyPart] = partContent.split('\n\n', 2);
+    //     const headers = headersPart.split('\n').reduce((acc, current) => {
+    //         const [key, value] = current.split(':', 2).map(s => s.trim());
+    //         acc[key.toLowerCase()] = value; // Use lowercase for header keys for easier matching
+    //         return acc;
+    //     }, {});
+    //
+    //     // Check for base64 encoding
+    //     if (headers['content-transfer-encoding'] === 'base64') {
+    //         // Decode base64 content
+    //         const decodedBody = atob(bodyPart.trim());
+    //         // If decoded content is expected to be YAML (based on Content-Type)
+    //         if (headers['content-type'] && headers['content-type'].includes('cloud-config')) {
+    //             // Process as cloud-init YAML content
+    //              // Use your existing processCloudInit function
+    //             return processCloudInit(decodedBody);
+    //         }else{
+    //
+    //         }
+    //         // Return decoded content directly if not cloud-init
+    //         return [{ path: "userdata", content: decodedBody }];
+    //     }
+    //
+    //     // Return raw body if not base64 encoded
+    //     return [{ path: "userdata", content: bodyPart }];
+    // }
+
     function parseMimePart(partContent) {
         // Split headers and body
         const [headersPart, bodyPart] = partContent.split('\n\n', 2);
@@ -79,19 +108,33 @@ global.user_data_decoder_3000 = function(){
         if (headers['content-transfer-encoding'] === 'base64') {
             // Decode base64 content
             const decodedBody = atob(bodyPart.trim());
-            // If decoded content is expected to be YAML (based on Content-Type)
-            if (headers['content-type'] && headers['content-type'].includes('cloud-config')) {
-                // Process as cloud-init YAML content
-                 // Use your existing processCloudInit function
-                return processCloudInit(decodedBody);
+
+            // Convert to Uint8Array for potential gzip decompression
+            let contentArray = stringToUint8Array(decodedBody);
+
+            // Try decompressing (in case it's gzipped), or use as is
+            contentArray = tryDecompress(contentArray);
+
+            // Convert Uint8Array back to string
+            const content = new TextDecoder("utf-8").decode(contentArray);
+
+            // Determine the type of content based on Content-Type header
+            if (headers['content-type']) {
+                if (headers['content-type'].includes('cloud-config')) {
+                    // Process as cloud-init YAML content
+                    return processCloudInit(content);
+                } else if (headers['content-type'].includes('text/x-shellscript')) {
+                    // Handle shell scripts
+                    const filename = headers['content-disposition'] ? headers['content-disposition'].split('filename="')[1].split('"')[0] : "script.sh";
+                    return [{ path: filename, content }];
+                } // Add other content types if needed
             }
-            // Return decoded content directly if not cloud-init
-            return [{ path: "userdata", content: decodedBody }];
         }
 
         // Return raw body if not base64 encoded
         return [{ path: "userdata", content: bodyPart }];
     }
+
 
 // Function to process cloud-init YAML content
     function processCloudInit(yamlContent) {
@@ -122,6 +165,7 @@ global.user_data_decoder_3000 = function(){
         }
         return files.length ? files : [{ path: "userdata", content: yamlContent }];
     }
+
 
     return {
         tryDecompress,

@@ -36,15 +36,6 @@ func TestReadCloudConfigFrom(t *testing.T) {
 				},
 			},
 		},
-		{
-			name: "Invalid content type",
-			attachment: MimeAttachment{
-				ContentType: "text/plain",
-				Content:     []byte("write_files:\n  - path: /test.txt\n    encoding: b64\n    content: dGVzdA=="),
-			},
-			baseDir:       "/base",
-			expectedError: "not a cloud-config content type",
-		},
 	}
 
 	for _, tt := range tests {
@@ -138,6 +129,27 @@ write_files:
 			expectedFiles: map[string]string{
 				"file1.txt":     "some text in here",
 				"dir/file2.txt": "some other text in here",
+			},
+		},
+		{
+			name: "Extract and save multi-line content using non mime cloud-init",
+			attachments: []MimeAttachment{
+				{
+					ContentType: "text/cloud-config",
+					Content: []byte(`#cloud-config
+"hostname": "some hostname is here"
+"runcmd":
+- "update-ca-trust"
+"write_files":
+- "content": |
+     ---
+     document: some-defaults
+  "path": "/etc/dnf/modules.defaults.d/postgresql.yaml"
+`),
+				},
+			},
+			expectedFiles: map[string]string{
+				"/etc/dnf/modules.defaults.d/postgresql.yaml": "---\ndocument: some-defaults\n",
 			},
 		},
 		{
