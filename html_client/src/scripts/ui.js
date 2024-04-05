@@ -16,7 +16,7 @@ window.user_data_decoder_3000_ui = function(){
             fileList.innerHTML=""
             file_content.innerHTML=""
             let processedFiles = [];
-            processedFiles.push({path: "special: raw_base64decoded", content:rawDecoded});
+            processedFiles.push({path: "raw_base64decoded", content:rawDecoded});
             if (Array.isArray(value) && value.length > 0) {
                 value.forEach(partContent => {
                     // Simplistic check to decide if it's cloud-init

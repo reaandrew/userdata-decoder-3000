@@ -41,6 +41,9 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 		}
 
 		decoded, err := decode(input.Data)
+		if rawErr := writeDataToFile(outputPath, "raw_base64decoded", decoded); err != nil {
+			return rawErr
+		}
 		if err != nil {
 			fmt.Println(fmt.Sprintf("There was an error decoding the base64 content %v", err))
 			// Since decoding failed, write the raw data to userdata file
