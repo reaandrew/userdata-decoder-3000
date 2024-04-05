@@ -97,7 +97,23 @@ window.user_data_decoder_3000 = function(){
 
     function parseMimePart(partContent) {
         // Split headers and body
-        const [headersPart, bodyPart] = partContent.split('\n\n', 2);
+        // Normalize line endings to LF (\n) and then split
+        const normalizedContent = partContent.replace(/\r\n/g, '\n');
+
+        // Splitting into sections based on two consecutive newlines,
+        // which works regardless of whether it was originally LF or CRLF
+        const sections = normalizedContent.split(/\n\n+/);
+
+        if (sections.length < 2) {
+            console.error('Failed to parse MIME part: Headers and body are not clearly separated.');
+            return { headersPart: '', bodyPart: '' };
+        }
+
+        // The first section is headers, and the rest is considered as the body.
+        // This handles cases where the body might start with what looks like a separator.
+        const headersPart = sections.shift();
+        const bodyPart = sections.join('\n\n'); // Rejoin the rest in case the body itself contained \n\n
+
         const headers = headersPart.split('\n').reduce((acc, current) => {
             const [key, value] = current.split(':', 2).map(s => s.trim());
             acc[key.toLowerCase()] = value; // Use lowercase for header keys for easier matching
@@ -120,12 +136,13 @@ window.user_data_decoder_3000 = function(){
 
             // Determine the type of content based on Content-Type header
             if (headers['content-type']) {
-                if (headers['content-type'].includes('cloud-config')) {
+                if (headers['content-type'].includes('cloud-config') ||
+                    content.includes("#cloud-config")) {
                     // Process as cloud-init YAML content
                     return processCloudInit(content);
-                } else if (headers['content-type'].includes('text/x-shellscript')) {
+                } else  {
                     // Handle shell scripts
-                    const filename = headers['content-disposition'] ? headers['content-disposition'].split('filename="')[1].split('"')[0] : "script.sh";
+                    const filename = headers['content-disposition'] ? headers['content-disposition'].split('filename="')[1].split('"')[0] : crypto.randomUUID();
                     return [{ path: filename, content }];
                 } // Add other content types if needed
             }
