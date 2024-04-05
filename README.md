@@ -64,8 +64,8 @@ Download the precompiled binaries for your respective operating system from the 
 
 ```
 Usages:
-  cloud-startup-data-decoder [OPTIONS]             : Specify options for data provider and output directory.
-  cloud-startup-data-decoder [CONTENT_TO_DECODE]   : Specify the content to decode as the first argument.
+  udd [OPTIONS]             : Specify options for data provider and output directory.
+  udd [CONTENT_TO_DECODE]   : Specify the content to decode as the first argument.
 
 Options:
   -o, --output-dir: Specify the output directory within your working directory. (default "output")
@@ -81,11 +81,11 @@ Options:
 Example:
 
 ```
-./cloud-startup-data-decoder $(cat test_data/gzip_base64_userdata.txt) 
+./udd $(cat test_data/gzip_base64_userdata.txt) 
 
 OR
 
-./cloud-startup-data-decoder --provider aws
+./udd --provider aws
 ```
 
 Given the following User Data (example and partial content) which is base64 encoded gzipped multi-part mime message with embedded encoded files inside, you can see before and after running the tool where the content is decoded and rebuilt into a directory structure consistent with the data:
