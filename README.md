@@ -7,9 +7,43 @@
 
 User Data Decoder 3000 (name inspiration from Joe Sparkes) decodes cloud instance startup data. It works with AWS and handles both cloud-init and plain text formats. Useful for developers, sysadmins, and cybersecurity roles. Azure and GCP support are on the roadmap.
 
-This tool was developed as a way to check no sensitive data is included in the userdata once it is created and attached to either an EC2 instance or AWS Launch Template.
+This tool was developed primarily as a demonstration and also as a way to check no sensitive data is included in the userdata once it is created and attached to either an EC2 instance or AWS Launch Template.
+
+> Although you can only access instance metadata and user data from within the instance itself, the data is not protected by authentication or cryptographic methods. Anyone who has direct access to the instance, and potentially any software running on the instance, can view its metadata. Therefore, you should not store sensitive data, such as passwords or long-lived encryption keys, as user data.
+>
+> https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
 
 There is a client side version available too just to serve as a demonstration and quick view of some user data.
+
+## Some info about user data
+
+EC2 User Data is utilised to pass startup scripts or other configuration data into instances at launch. The flexibility of User Data allows for various formats, depending on the instance's needs and the tasks you want to automate. Below are some of the formats that EC2 User Data can take:
+
+1. Plain Text
+
+Plain text can be used for simple commands or instructions that don't require encoding. It's directly interpreted by the shell if the first line is a shebang (#!), indicating what interpreter to use (e.g., #!/bin/bash for a shell script).
+
+2.Shell Scripts
+
+Shell scripts are perhaps the most common use case, allowing you to execute a series of commands automatically upon instance startup. 
+
+3. Cloud-Init Directives
+
+Cloud-init is a widely used method for early initialization of cloud instances. Supported by many cloud providers, cloud-init scripts can be used to perform tasks such as installing packages, writing files, and configuring users or security settings. 
+
+4. Multi-part MIME Messages
+
+When you need to pass multiple pieces of information or scripts of different types, you can use multi-part MIME messages. This format allows you to combine shell scripts, cloud-init directives, and other data types into a single User Data payload. Each part of the message can be of a different MIME type, enabling complex initialization sequences.
+
+5. Gzipped Content
+
+User Data supports gzipped content, which is useful for compressing large initialization scripts or data. Gzipped content must be decompressed by the receiving script or application. This is particularly useful for optimizing the use of the 16 KB limit on User Data.
+
+6. Base64 Encoded Data
+
+Any User Data must be base64 encoded. 
+
+Read more at [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-add-user-data.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-add-user-data.html)
 
 ## CLI
 
