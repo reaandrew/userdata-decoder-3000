@@ -72,15 +72,15 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 				if err != nil {
 					return fmt.Errorf("failed to save write files: %w", err)
 				}
-				for _, attachment := range attachments {
-					fullPath := filepath.Join(outputPath, attachment.Filename)
-					err := os.MkdirAll(path.Dir(fullPath), 0755)
-					if err != nil {
-						return fmt.Errorf("error creating output directories: %w", err)
-					}
-					decodedContent, err := decode(attachment.Content)
-					err = os.WriteFile(fullPath, decodedContent, 0644)
-				}
+				//for _, attachment := range attachments {
+				//	fullPath := filepath.Join(outputPath, attachment.Filename)
+				//	err := os.MkdirAll(path.Dir(fullPath), 0755)
+				//	if err != nil {
+				//		return fmt.Errorf("error creating output directories: %w", err)
+				//	}
+				//	decodedContent, err := decode(attachment.Content)
+				//	err = os.WriteFile(fullPath, decodedContent, 0644)
+				//}
 			}
 		}
 	}
