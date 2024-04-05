@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -68,8 +69,12 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 
 		filename, err := extractFilename(part)
 		if err != nil {
-			fmt.Println(err)
-			return nil, fmt.Errorf("error reading part filename: %s", err)
+			if strings.Contains(err.Error(), "no Content-Disposition header found") {
+				filename = uuid.New().String()
+			} else {
+				return nil, fmt.Errorf("error reading part filename: %s", err)
+			}
+
 		}
 
 		attachments = append(attachments, MimeAttachment{
