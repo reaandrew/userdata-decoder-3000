@@ -71,3 +71,5 @@ function user_data_decoder_3000_ui(){
         attach
     }
 }
+
+window.user_data_decoder_3000_ui = user_data_decoder_3000_ui;
