@@ -93,9 +93,77 @@ jobs:
           asset_name: udd-linux-amd64
           asset_content_type: application/octet-stream
 
+  intergation_test_setup:
+    runs-on: ubuntu-latest
+    outputs:
+      instance_id: ${{ steps.create_ec2.outputs.instance_id }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: arn:aws:iam::276447169330:role/userdata-decoder-3000.andrewrea.co.uk
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Create EC2 instance
+        id: create_ec2
+        run: |
+          INSTANCE_ID=$(aws ec2 run-instances --region eu-west-2 --image-id ami-018ff7b635dfd082c --instance-type t3.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=UserData3000TestInstance}]' --max-count 1 --min-count 1 --query 'Instances[0].InstanceId' --output text)
+          echo "::set-output name=instance_id::$INSTANCE_ID"
+
+
+  download_artifacts:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-binaries
+          path: ./build
+
+  integration_test:
+    needs:
+      - build
+      - download_artifacts
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        include:
+          - os: windows-latest
+            executable: ./build/udd-windows-amd64.exe
+          - os: macos-latest
+            executable: ./build/udd-darwin-amd64
+          - os: ubuntu-latest
+            executable: ./build/udd-linux-amd64
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: arn:aws:iam::276447169330:role/test-userdata-decoder-3000.andrewrea.co.uk
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Test Application
+        run: ${{ matrix.executable }} --provider aws --output ./output/${{ matrix.os }}/
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: compiled-binaries
+          path: ./output/
+
+  teardown:
+    needs: integration_test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Teardown EC2 instance
+        run: aws ec2 terminate-instances --instance-ids ${{ needs.setup.outputs.instance_id }}
+        # Make sure AWS CLI is configured appropriately in the runner
+
   update-latest-release:
     if: github.ref == 'refs/heads/main'
-    needs: build
+    needs:
+      - integration_test
     runs-on: ubuntu-latest
 
     steps:
@@ -139,6 +207,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload latest ./build/* --clobber
+
 
 
   update_dev_release:
