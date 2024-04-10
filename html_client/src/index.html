@@ -96,7 +96,9 @@
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
-                            <p>Few reasons. I found a disconnect between what was being stored in user data and what shouldn't be stored in user data. I also found examples where the generation of the user data was via several different processes and it wasn't straightforward to see exactly what the end result was and what was being stored. This client-side tool is to support a presentation and also to signpost to the main tool which can iterate over all the servers in an AWS account and decode the user data. This could be done for debug, discovery, pen testing, or audit purposes.</p>
+                            <p>Few reasons...</p>
+                            <p>The primary reason is to support a cybersecurity talk I am working on. </p>
+                            <p>Some other reasons are that I found a disconnect between what was being stored in user data and what shouldn't be stored in user data. I also found examples where the generation of the user data was via several different processes and it wasn't straightforward to see exactly what the end result was and what was being stored. This client-side tool is to support a presentation and also to signpost to the main tool which can iterate over all the servers in an AWS account and decode the user data. This could be done for debug, discovery, pen testing, or audit purposes.</p>
                             <p>
                                 <p class="bg-secondary p-2 ms-4 me-4 text-light rounded">
 Although you can only access instance metadata and user data from within the instance itself, the data is not protected by authentication or cryptographic methods. Anyone who has direct access to the instance, and potentially any software running on the instance, can view its metadata. <strong>Therefore, you should not store sensitive data, such as passwords or long-lived encryption keys, as user data.</strong>
@@ -116,7 +118,8 @@ Although you can only access instance metadata and user data from within the ins
                     </h2>
                     <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
-                            <p>No this is purely client-side code. It uses native tooling, pako, and js-yaml to decode, decompress, and deserialize the data and present it to you.</p>
+                            <p>No, this is purely client-side code. It uses native tooling, pako, and js-yaml to decode, decompress, and deserialize the data and present it to you.</p>
+                            <p>There is also no analytics library present either as it would take some time to ensure the contents of the input are not captured which at this time I am not sure how to implement.</p>
                         </div>
                     </div>
                 </div>
@@ -135,7 +138,6 @@ Although you can only access instance metadata and user data from within the ins
                             <p><strong>Plain Text & Shell Scripts:</strong>If the decoded data is plain text or a recognizable shell script (often starting with #!/bin/bash or similar) no further deserialization is required.</p>
                             <p><strong>Gzipped Content:</strong>To detect and decompress gzippedc content the first few bytes of the decoded data are checked for the gzip signature (1F 8B). If present, the dats is decompressed to retrieve the original content, which then may need to be further processed based on its format.</p>
                             <p><strong>Multi-Part MIME Message:</strong> MIME-encoded userdata is used to pass multiple pieces of data or scripts. If a MIME header is detected, the content is parsed into its parts and handled each according to its MIME type. This may involve recursively applying the other steps mentioning here to each part.</p>
-
                             <p><strong>Cloud-Init Directives:</strong>Cloud-init data might start with specific markers or be in YAML format. If cloud-init directives are detected each of the write files are extracted and stored using the file path relative to the output directory.  A complete copy of the cloud-init config is also stored.</p>
                         </div>
                     </div>
