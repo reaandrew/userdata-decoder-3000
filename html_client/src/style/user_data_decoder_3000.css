@@ -14,3 +14,20 @@ body{
 li{
     cursor: pointer !important;
 }
+
+h2{
+    color: #fb6535;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: lightslategray !important; /* Light blue background for the header */
+    color: #010d17; /* Change text color if needed */
+}
+.accordion-body {
+    background-color: white !important; /* Very light blue background for the body */
+}
+
+.accordion-button.collapsed {
+    background-color: lightgray !important; /* Light blue background for the header */
+    color: #010d17; /* Change text color if needed */
+}

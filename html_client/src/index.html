@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Userdata Decoder 3000</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/pako@2.0.4/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="scripts/user_data_decoder_3000.js"></script>
@@ -50,6 +51,92 @@
 </pre>
                             </div>
                             <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2>FAQs</h2>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <strong>How do I use this?</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Just paste your user data straight into the text box and hit decode.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <strong>Where do I find user data?</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>To find EC2 instance userdata using the AWS CLI (Command Line Interface), you can utilize the describe-instance-attribute command along with specifying the --attribute userData parameter. Open your terminal or command prompt and type the following command, replacing instance-id with your actual EC2 instance ID: <code>aws ec2 describe-instance-attribute --instance-id instance-id --attribute userData</code>. This command returns the userdata in an encoded format. </p>
+                            <p>You can also use the <a href="https://github.com/reaandrew/userdata-decoder-3000">Userdata Decoder 3000 CLI</a> which will decode everything but also output a copy of base64 encoded user data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <strong>Why does this tool exist?</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>Few reasons. I found a disconnect between what was being stored in user data and what shouldn't be stored in user data. I also found examples where the generation of the user data was via several different processes and it wasn't straightforward to see exactly what the end result was and what was being stored. This client-side tool is to support a presentation and also to signpost to the main tool which can iterate over all the servers in an AWS account and decode the user data. This could be done for debug, discovery, pen testing, or audit purposes.</p>
+                            <p>
+                                <p class="bg-secondary p-2 ms-4 me-4 text-light rounded">
+Although you can only access instance metadata and user data from within the instance itself, the data is not protected by authentication or cryptographic methods. Anyone who has direct access to the instance, and potentially any software running on the instance, can view its metadata. <strong>Therefore, you should not store sensitive data, such as passwords or long-lived encryption keys, as user data.</strong>
+                                </p>
+                                <p class="ms-4"><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>
+                            </p>
+                            <p>Small note, this documentation from AWS is a little in-accurate since you can use the CLI to get the userdata in encoded form which is the target for this client side tool and the CLI version.  The main point of this warning is the fact user data is not stored encrypted and therefore should not be used to store sensitive information.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            <strong>Will this page send my data to a server?</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>No this is purely client-side code. It uses native tooling, pako, and js-yaml to decode, decompress, and deserialize the data and present it to you.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFive">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                            <strong>What userdata formats does this tool support?</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <h3>Base64 Decoding</h3>
+                            <p><strong>Primary Step:</strong> Since the user data is always base64 encoded, the first step is always to decode this layer.</p>
+                            <h3>Format Detection and Processing</h3>
+                            <p><strong>Plain Text & Shell Scripts:</strong>If the decoded data is plain text or a recognizable shell script (often starting with #!/bin/bash or similar) no further deserialization is required.</p>
+                            <p><strong>Gzipped Content:</strong>To detect and decompress gzippedc content the first few bytes of the decoded data are checked for the gzip signature (1F 8B). If present, the dats is decompressed to retrieve the original content, which then may need to be further processed based on its format.</p>
+                            <p><strong>Multi-Part MIME Message:</strong> MIME-encoded userdata is used to pass multiple pieces of data or scripts. If a MIME header is detected, the content is parsed into its parts and handled each according to its MIME type. This may involve recursively applying the other steps mentioning here to each part.</p>
+
+                            <p><strong>Cloud-Init Directives:</strong>Cloud-init data might start with specific markers or be in YAML format. If cloud-init directives are detected each of the write files are extracted and stored using the file path relative to the output directory.  A complete copy of the cloud-init config is also stored.</p>
                         </div>
                     </div>
                 </div>
