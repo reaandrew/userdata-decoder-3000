@@ -1,7 +1,32 @@
 
 # Userdata Decoder 3000
+See what things are being stored in user data to ensure there is no sensitive information in there!
 
 ![logo.png](html_client%2Fsrc%2Fimages%2Flogo.png)
+
+
+## Getting Started
+
+### Linux
+
+```shell
+curl -L -o udd https://github.com/reaandrew/userdata-decoder-3000/releases/download/v1.4.1/udd-linux-amd64
+./udd --provider aws --output output-path
+```
+
+### Mac
+
+```shell
+curl -L -o udd https://github.com/reaandrew/userdata-decoder-3000/releases/download/v1.4.1/udd-darwin-amd64
+./udd --provider aws --output output-path
+```
+
+### Windows
+
+```shell
+Invoke-WebRequest -Uri "https://github.com/reaandrew/userdata-decoder-3000/releases/download/v1.4.1/udd-windows-amd64.exe" -OutFile "udd.exe"
+./udd.exe --provider aws --output output-path
+```
 
 ## Description
 
@@ -51,10 +76,10 @@ Read more at [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-a
 
 Download the precompiled binaries for your respective operating system from the Releases section.
 
-- [Windows](url-to-windows-release)
-- [Linux](url-to-linux-release)
-- [macOS](url-to-macos-release)
 
+- [Linux](https://github.com/reaandrew/userdata-decoder-3000/releases/download/v1.4.1/udd-linux-amd64)
+- [macOS](https://github.com/reaandrew/userdata-decoder-3000/releases/download/v1.4.1/udd-darwin-amd64)
+- [Windows](https://github.com/reaandrew/userdata-decoder-3000/releases/download/v1.4.1/udd-windows-amd64.exe)
 
 ## Usage
 
