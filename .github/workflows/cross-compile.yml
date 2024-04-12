@@ -129,8 +129,8 @@ jobs:
         id: create_ec2
         run: |
           INSTANCE_ID=$(aws ec2 run-instances --region eu-west-2 --image-id ami-018ff7b635dfd082c --instance-type t3.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=UserData3000TestInstance}]'  --query 'Instances[0].InstanceId' --output text)
+          echo "Fetched Instance ID: $INSTANCE_ID"
           echo "instance_id=$INSTANCE_ID"  >> "$GITHUB_OUTPUT"
-          echo "instance_id=123"  >> "$GITHUB_OUTPUT"
 
   integration_test:
     if: github.ref == 'refs/heads/main'
