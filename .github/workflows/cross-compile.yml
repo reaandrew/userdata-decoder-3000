@@ -46,11 +46,14 @@ jobs:
           env GOOS=darwin GOARCH=amd64 go build -o ./build/udd-darwin-amd64
           env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -ldflags '-linkmode external -extldflags "-static"' -o ./build/udd-linux-amd64
 
+      - name: Tar build directory
+        run: tar -czvf build.tar.gz -C build .
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: compiled-binaries
-          path: ./build/
+          path: build.tar.gz
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -63,11 +66,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download compiled artifacts
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v2
         with:
-          name: compiled-binaries
-          path: ./build
+          name: build-artifacts
+          path: ./downloaded
+
+      - name: Untar build directory
+        run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
       - name: Create Release
         id: create_release
@@ -144,13 +150,17 @@ jobs:
           role-to-assume: arn:aws:iam::276447169330:role/test.userdata-decoder-3000.andrewrea.co.uk
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
-      - name: Download compiled artifacts
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v2
         with:
-          name: compiled-binaries
-          path: ./build
+          name: build-artifacts
+          path: ./downloaded
+
+      - name: Untar build directory
+        run: tar -xzvf ./downloaded/build.tar.gz -C ./build
+
       - name: Test Application
-        run: ${{ matrix.executable }} --provider aws --output ./output/${{ matrix.os }}/
+        run: ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -183,11 +193,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download compiled artifacts
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v2
         with:
-          name: compiled-binaries
-          path: ./build
+          name: build-artifacts
+          path: ./downloaded
+
+      - name: Untar build directory
+        run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
       - name: Install GitHub CLI
         run: sudo apt install gh
@@ -234,11 +247,15 @@ jobs:
         with:
           fetch-depth: 0  # Required for 'git describe' to work
 
-      - name: Download compiled artifacts
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v2
         with:
-          name: compiled-binaries
-          path: ./build
+          name: build-artifacts
+          path: ./downloaded
+
+      - name: Untar build directory
+        run: tar -xzvf ./downloaded/build.tar.gz -C ./build
+
 
       - name: Get version from git describe
         id: git_describe
