@@ -72,6 +72,9 @@ jobs:
           name: compiled-binaries
           path: ./downloaded
 
+      - name: Create build directory
+        run: mkdir -p ./build
+
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
@@ -113,7 +116,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     outputs:
-      instance_id: ${{ steps.integration_test_setup.outputs.instance_id }}
+      instance_id: ${{ steps.create_ec2.outputs.instance_id }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -156,6 +159,9 @@ jobs:
           name: compiled-binaries
           path: ./downloaded
 
+      - name: Create build directory
+        run: mkdir -p ./build
+
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
@@ -192,6 +198,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Create build directory
+        run: mkdir -p ./build
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v2
@@ -252,6 +261,9 @@ jobs:
         with:
           name: compiled-binaries
           path: ./downloaded
+
+      - name: Create build directory
+        run: mkdir -p ./build
 
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
