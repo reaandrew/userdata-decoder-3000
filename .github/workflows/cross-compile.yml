@@ -54,7 +54,7 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs: integration_test
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -102,10 +102,12 @@ jobs:
           asset_name: udd-linux-amd64
           asset_content_type: application/octet-stream
 
-  intergation_test_setup:
+  integration_test_setup:
+    if: github.ref == 'refs/heads/main'
+    needs: build
     runs-on: ubuntu-latest
     outputs:
-      instance_id: ${{ steps.create_ec2.outputs.instance_id }}
+      instance_id: ${{ steps.integration_test_setup.outputs.instance_id }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -118,23 +120,12 @@ jobs:
         id: create_ec2
         run: |
           INSTANCE_ID=$(aws ec2 run-instances --region eu-west-2 --image-id ami-018ff7b635dfd082c --instance-type t3.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=UserData3000TestInstance}]'  --query 'Instances[0].InstanceId' --output text)
-          echo "::set-output name=instance_id::$INSTANCE_ID"
-
-
-  download_artifacts:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download compiled artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: compiled-binaries
-          path: ./build
+          echo "instance_id=$INSTANCE_ID"  >> "$GITHUB_OUTPUT"
 
   integration_test:
+    if: github.ref == 'refs/heads/main'
     needs:
-      - build
-      - download_artifacts
+      - integration_test_setup
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -153,6 +144,11 @@ jobs:
           role-to-assume: arn:aws:iam::276447169330:role/test-userdata-decoder-3000.andrewrea.co.uk
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-binaries
+          path: ./build
       - name: Test Application
         run: ${{ matrix.executable }} --provider aws --output ./output/${{ matrix.os }}/
       - name: Archive production artifacts
@@ -162,9 +158,9 @@ jobs:
           path: ./output/
 
   teardown:
+    if: github.ref == 'refs/heads/main'
     needs: integration_test
     runs-on: ubuntu-latest
-    if: always()
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -174,7 +170,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Teardown EC2 instance
-        run: aws ec2 terminate-instances --instance-ids ${{ needs.setup.outputs.instance_id }}
+        run: aws ec2 terminate-instances --instance-ids ${{ needs.integration_test_setup.outputs.instance_id }}
         # Make sure AWS CLI is configured appropriately in the runner
 
   update-latest-release:
