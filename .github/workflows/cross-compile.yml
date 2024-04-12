@@ -166,6 +166,13 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: arn:aws:iam::276447169330:role/test.userdata-decoder-3000.andrewrea.co.uk
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Teardown EC2 instance
         run: aws ec2 terminate-instances --instance-ids ${{ needs.setup.outputs.instance_id }}
         # Make sure AWS CLI is configured appropriately in the runner
