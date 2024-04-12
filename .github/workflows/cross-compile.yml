@@ -176,7 +176,9 @@ jobs:
 
   teardown:
     if: always()
-    needs: integration_test
+    needs:
+     - integration_test
+     - integration_test_setup
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS credentials
