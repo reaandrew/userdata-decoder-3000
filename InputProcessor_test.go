@@ -20,7 +20,7 @@ func TestWritePlainUserDataFileWhenNotBase64Encoded(t *testing.T) {
 		OutputDir: "some_output_dir",
 	}
 
-	err := inputProcessor.writePlainUserDataFile(dataOutputPair)
+	err := inputProcessor.writeFile(dataOutputPair, "userdata")
 
 	assert.Nil(t, err)
 
