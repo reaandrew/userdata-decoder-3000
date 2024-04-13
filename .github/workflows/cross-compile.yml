@@ -170,8 +170,27 @@ jobs:
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
-      - name: Test Application
-        run: ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
+      - name: Test Application and List Files
+        run: |
+          ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
+          if ("${{ runner.os }}" -eq "Windows") {
+            $files = Get-ChildItem -Path .\output\${{ matrix.os }} -Recurse -File | Select-Object -ExpandProperty FullName
+            $fileCount = $files.Count
+            Write-Output "Number of files: $fileCount"
+            if ($fileCount -lt 10) {  # Check if file count is less than expected minimum
+              Write-Error "Error: Less than 10 files found!"
+              exit 1
+            }
+          } else {
+            files=$(find ./output/${{ matrix.os }} -type f)
+            fileCount=$(echo "$files" | wc -l)
+            echo "Number of files: $fileCount"
+            if [ "$fileCount" -lt 10 ]; then  # Check if file count is less than expected minimum
+              echo "Error: Less than 10 files found!" >&2
+              exit 1
+            fi
+          }
+        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
