@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -21,7 +20,7 @@ type CloudConfig struct {
 func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
 	for _, file := range cloudConfig.WriteFiles {
 		fullPath := filepath.Join(outputDir, file.Path)
-		err := os.MkdirAll(path.Dir(fullPath), 0755)
+		err := os.MkdirAll(filepath.Dir(fullPath), 0755)
 		if err != nil {
 			return fmt.Errorf("error creating output directories: %w", err)
 		}

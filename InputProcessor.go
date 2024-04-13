@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -20,8 +19,7 @@ func (inputProcessor InputProcessor) writeFile(input DataOutputPair, filename st
 }
 
 func (inputProcessor InputProcessor) writeFileWithData(data []byte, filename string) error {
-	pathToMake := path.Dir(filename)
-	fmt.Println(fmt.Sprintf("Making path %s", pathToMake))
+	pathToMake := filepath.Dir(filename)
 	err := os.MkdirAll(pathToMake, 0755)
 
 	if err != nil {
