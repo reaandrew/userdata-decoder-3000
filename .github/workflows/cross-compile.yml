@@ -170,6 +170,9 @@ jobs:
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
+      - name: Create output directory
+        run: mkdir -p ./output/${{ matrix.os }}/
+
       - name: Test Application
         run: ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
       - name: Archive production artifacts
