@@ -54,7 +54,7 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 			}
 			err = os.WriteFile(fullPath, input.Data, 0644)
 			if err != nil {
-				return fmt.Errorf("error writing file: %w", err)
+				return fmt.Errorf("error writing file after failing to decode base64: %w", err)
 			}
 		} else {
 			attachments, err := ExtractMimeAttachmentsFromBytes(decoded)
@@ -66,7 +66,7 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 				}
 				err = os.WriteFile(fullPath, decoded, 0644)
 				if err != nil {
-					return fmt.Errorf("error writing file: %w", err)
+					return fmt.Errorf("error writing file after failing to extract mime attachments: %w", err)
 				}
 			} else {
 				for _, attachment := range attachments {
