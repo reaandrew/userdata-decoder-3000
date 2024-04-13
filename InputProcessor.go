@@ -20,14 +20,16 @@ func (inputProcessor InputProcessor) writeFile(input DataOutputPair, filename st
 }
 
 func (inputProcessor InputProcessor) writeFileWithData(data []byte, filename string) error {
-	err := os.MkdirAll(path.Dir(filename), 0755)
+	pathToMake := path.Dir(filename)
+	fmt.Println(fmt.Sprintf("Making path %s", pathToMake))
+	err := os.MkdirAll(pathToMake, 0755)
 
 	if err != nil {
 		return fmt.Errorf("error creating output directories: %w", err)
 	}
 	err = os.WriteFile(filename, data, 0755)
 	if err != nil {
-		return fmt.Errorf("errir writing file: %w", err)
+		return fmt.Errorf("error writing file: %w", err)
 	}
 	return nil
 }
