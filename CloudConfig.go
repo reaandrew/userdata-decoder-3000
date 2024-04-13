@@ -27,7 +27,7 @@ func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
 		}
 		err = os.WriteFile(fullPath, []byte(file.Content), 0644)
 		if err != nil {
-			return fmt.Errorf("error writing file: %w", err)
+			return fmt.Errorf("error writing cloud config file: %w", err)
 		}
 	}
 	return nil
