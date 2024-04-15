@@ -190,7 +190,6 @@ jobs:
               exit 1
             fi
           }
-        shell: ${{ matrix.os == 'Windows' && 'pwsh' || 'bash' }}
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
