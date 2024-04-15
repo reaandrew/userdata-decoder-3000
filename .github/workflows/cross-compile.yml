@@ -170,26 +170,32 @@ jobs:
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
-      - name: Test Application and List Files
+      - name: Test on Nix
+        if: matrix.os != 'Windows'
         run: |
-          ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
-          if ("${{ matrix.os }}" -eq "windows-latest") {
-            $files = Get-ChildItem -Path .\output\${{ matrix.os }} -Recurse -File | Select-Object -ExpandProperty FullName
-            $fileCount = $files.Count
-            Write-Output "Number of files: $fileCount"
-            if ($fileCount -ne 10) {  # Check if file count is less than expected minimum
-              Write-Error "Error: Less than 10 files found!"
-              exit 1
-            }
-          } else {
-            files=$(find ./output/${{ matrix.os }} -type f)
-            fileCount=$(echo "$files" | wc -l)
-            echo "Number of files: $fileCount"
-            if [ "$fileCount" -ne 10 ]; then  # Check if file count is less than expected minimum
-              echo "Error: Less than 10 files found!" >&2
-              exit 1
-            fi
+          ./build/udd-${{ matrix.os }} --provider aws --output-dir ./output/${{ matrix.os }}/
+          files=$(find ./output/${{ matrix.os }} -type f)
+          fileCount=$(echo "$files" | wc -l)
+          echo "Number of files: $fileCount"
+          if [ "$fileCount" -ne 10 ]; then
+            echo "Error: Less than 10 files found!" >&2
+            exit 1
+          fi
+        shell: bash
+
+      - name: Test on Windows
+        if: matrix.os == 'Windows'
+        run: |
+          & ./build/udd-${{ matrix.os }} --provider aws --output-dir ./output/windows-latest/
+          $files = Get-ChildItem -Path .\output\windows-latest -Recurse -File | Select-Object -ExpandProperty FullName
+          $fileCount = $files.Count
+          Write-Output "Number of files: $fileCount"
+          if ($fileCount -ne 10) {
+            Write-Error "Error: Less than 10 files found!"
+            exit 1
           }
+        shell: pwsh
+
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
