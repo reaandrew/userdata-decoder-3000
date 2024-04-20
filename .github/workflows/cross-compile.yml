@@ -173,7 +173,7 @@ jobs:
       - name: Run on Linux or macOS
         if: matrix.os != 'Windows'
         run: |
-          ./build/udd-${{ matrix.os }} --provider aws --output-dir ./output/${{ matrix.os }}/
+          ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
           files=$(find ./output/${{ matrix.os }} -type f)
           fileCount=$(echo "$files" | wc -l)
           echo "Number of files: $fileCount"
@@ -186,7 +186,7 @@ jobs:
       - name: Run on Windows
         if: matrix.os == 'Windows'
         run: |
-          & ./build/udd-windows-amd64.exe --provider aws --output-dir ./output/windows-latest/
+          & ${{ matrix.executable }} --provider aws --output-dir ./output/windows-latest/
           $files = Get-ChildItem -Path .\output\windows-latest -Recurse -File | Select-Object -ExpandProperty FullName
           $fileCount = $files.Count
           Write-Output "Number of files: $fileCount"
