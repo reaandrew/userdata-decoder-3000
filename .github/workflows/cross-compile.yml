@@ -170,7 +170,7 @@ jobs:
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
-      - name: Test on Nix
+      - name: Run on Linux or macOS
         if: matrix.os != 'Windows'
         run: |
           ./build/udd-${{ matrix.os }} --provider aws --output-dir ./output/${{ matrix.os }}/
@@ -183,10 +183,10 @@ jobs:
           fi
         shell: bash
 
-      - name: Test on Windows
+      - name: Run on Windows
         if: matrix.os == 'Windows'
         run: |
-          & ./build/udd-${{ matrix.os }} --provider aws --output-dir ./output/windows-latest/
+          & ./build/udd-windows-amd64.exe --provider aws --output-dir ./output/windows-latest/
           $files = Get-ChildItem -Path .\output\windows-latest -Recurse -File | Select-Object -ExpandProperty FullName
           $fileCount = $files.Count
           Write-Output "Number of files: $fileCount"
@@ -195,7 +195,6 @@ jobs:
             exit 1
           }
         shell: pwsh
-
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
