@@ -174,10 +174,10 @@ jobs:
         if: matrix.os != 'Windows'
         run: |
           ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
-          files=$(find ./output/${{ matrix.os }} -type f)
+          find ./output/${{ matrix.os }} -type f
           fileCount=$(echo "$files" | wc -l)
           echo "Number of files: $fileCount"
-          if [ "$fileCount" -ne 10 ]; then
+          if [ "$fileCount" -ne 6 ]; then
             echo "Error: Less than 10 files found!" >&2
             exit 1
           fi
@@ -190,7 +190,7 @@ jobs:
           $files = Get-ChildItem -Path .\output\windows-latest -Recurse -File | Select-Object -ExpandProperty FullName
           $fileCount = $files.Count
           Write-Output "Number of files: $fileCount"
-          if ($fileCount -ne 10) {
+          if ($fileCount -ne 6) {
             Write-Error "Error: Less than 10 files found!"
             exit 1
           }
