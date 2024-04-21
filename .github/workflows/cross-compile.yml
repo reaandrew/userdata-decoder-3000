@@ -174,24 +174,31 @@ jobs:
         if: matrix.os != 'Windows'
         run: |
           ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
-          find ./output/${{ matrix.os }} -type f
-          fileCount=$(echo "$files" | wc -l)
-          echo "Number of files: $fileCount"
-          if [ "$fileCount" -ne 6 ]; then
-            echo "Error: Less than 10 files found!" >&2
-            exit 1
-          fi
+          files=(find ./output/${{ matrix.os }} -type f)
+          grep -q raw <<< "$files"
+          grep -q userdata <<< "$files"
+          grep -q raw_base64Decoded <<< "$files"
         shell: bash
 
       - name: Run on Windows
         if: matrix.os == 'Windows'
         run: |
-          & ${{ matrix.executable }} --provider aws --output-dir ./output/windows-latest/
-          $files = Get-ChildItem -Path .\output\windows-latest -Recurse -File | Select-Object -ExpandProperty FullName
+          & ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
+          $files = Get-ChildItem -Path .\output\${{ matrix.os }} -Recurse -File | Select-Object -ExpandProperty FullName
           $fileCount = $files.Count
           Write-Output "Number of files: $fileCount"
+          
+          # Check if the required files exist in the output
+          $requiredFiles = @('raw', 'userdata', 'raw_base64Decoded')
+          $foundFiles = $files | Where-Object { $_ -match $requiredFiles -join '|' }
+          
+          if ($foundFiles.Count -ne $requiredFiles.Count) {
+            Write-Error "Error: Required files are missing!"
+            exit 1
+          }
+            
           if ($fileCount -ne 6) {
-            Write-Error "Error: Less than 10 files found!"
+            Write-Error "Error: Incorrect number of files found! Expected 6, found $fileCount"
             exit 1
           }
         shell: pwsh
