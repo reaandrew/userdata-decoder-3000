@@ -173,7 +173,7 @@ jobs:
       - name: Run on Linux or macOS
         if: matrix.os != 'Windows'
         run: |
-          ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
+          ${{ matrix.executable }} --provider aws -v --output-dir ./output/${{ matrix.os }}/
           files=$(find ./output/${{ matrix.os }} -type f)
           echo $files
           grep -q raw <<< "$files" || (echo "can't find raw" && exit 1)
@@ -184,7 +184,7 @@ jobs:
       - name: Run on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          & ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
+          & ${{ matrix.executable }} --provider aws -v --output-dir ./output/${{ matrix.os }}/
           $files = Get-ChildItem -Path .\output\${{ matrix.os }} -Recurse -File | Select-Object -ExpandProperty FullName
           $fileCount = $files.Count
           Write-Output "Number of files: $fileCount"
