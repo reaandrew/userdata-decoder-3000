@@ -96,6 +96,14 @@ func extractBoundary(data []byte) (string, error) {
 		if strings.HasPrefix(line, "Content-Type:") {
 			_, params, err := mime.ParseMediaType(strings.TrimPrefix(line, "Content-Type: "))
 			if err != nil {
+				Log.WithError(err).
+					WithField("line", line).
+					Error("Error parsing media type to get the boundary")
+			} else {
+				Log.WithField("line", line).Debugf("Parsing Media Type to get the boundary %v", params)
+			}
+
+			if err != nil {
 				return "", err
 			}
 			boundary, found := params["boundary"]
