@@ -85,6 +85,10 @@ func TestProcessBase64GzippedCloudInitConfig(t *testing.T) {
 	}
 	err := inputProcessor.Process(dataOutputPairs)
 
-	assert.FileExistsf(t, filepath.Join(tempDir, "i-111", "userdata"), "Expected userdata")
+	assert.FileExistsf(t, filepath.Join(tempDir, "i-111", "raw"), "Expected raw")
+	assert.FileExistsf(t, filepath.Join(tempDir, "i-111", "raw_base64Decoded"), "Expected raw_base64Decoded")
+	assert.FileExistsf(t, filepath.Join(tempDir, "i-111", "start.sh"), "Expected start.sh")
+	assert.FileExistsf(t, filepath.Join(tempDir, "i-111", "etc/sample_app/some-yaml.yaml"), "Expected etc/sample_app/some-yaml.yaml")
+	assert.FileExistsf(t, filepath.Join(tempDir, "i-111", "usr/share/sample_app/some-text.txt"), "Expected etc/sample_app/some-yaml.yaml")
 	assert.Nil(t, err)
 }

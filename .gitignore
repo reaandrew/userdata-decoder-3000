@@ -159,3 +159,5 @@ dist
 
 .terraform.lock.hcl
 .terraform/
+
+userdata-decoder-3000
