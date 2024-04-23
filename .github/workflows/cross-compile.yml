@@ -174,7 +174,7 @@ jobs:
         if: matrix.os != 'Windows'
         run: |
           ${{ matrix.executable }} --provider aws --output-dir ./output/${{ matrix.os }}/
-          files=(find ./output/${{ matrix.os }} -type f)
+          files=$(find ./output/${{ matrix.os }} -type f)
           echo $files
           grep -q raw <<< "$files" || (echo "can't find raw" && exit 1)
           grep -q userdata <<< "$files" || (echo "can't find userdata" && exit 1)
