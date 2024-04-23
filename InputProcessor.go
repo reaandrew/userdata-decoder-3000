@@ -55,6 +55,7 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 			}
 		} else {
 			attachments, err := ExtractMimeAttachmentsFromBytes(decoded)
+			Log.Errorln("Error Extracting Mime Attachments From Bytes", err)
 			if err != nil {
 				err := inputProcessor.writeFile(input, "userdata")
 				if err != nil {
