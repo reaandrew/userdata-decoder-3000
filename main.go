@@ -4,9 +4,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 )
+
+var Log = logrus.New()
 
 func main() {
 	if err := run(); err != nil {
@@ -39,6 +42,8 @@ func run() error {
 func parseFlags() (config Config, err error) {
 	flag.StringVar(&config.providerKey, "p", "", "Specify the data provider (e.g., aws).")
 	flag.StringVar(&config.providerKey, "provider", "", "Specify the data provider (e.g., aws).")
+	flag.BoolVar(&config.verbose, "v", false, "Output debug information from the process")
+	flag.BoolVar(&config.verbose, "verbose", false, "Output debug information from the process")
 	flag.StringVar(&config.outputDir, "o", "output", "Specify the output directory within your working directory.")
 	flag.StringVar(&config.outputDir, "output-dir", "output", "Specify the output directory within your working directory.")
 
@@ -49,12 +54,22 @@ func parseFlags() (config Config, err error) {
 		fmt.Println("\nOptions:")
 		fmt.Println("  -o, --output-dir: Specify the output directory within your working directory. (default \"output\")")
 		fmt.Println("  -p, --provider:   Specify the data provider (e.g., aws).")
+		fmt.Println("  -v, --verbose:   Output debug information from the process")
 		os.Exit(0)
 	}
 
 	flag.Parse()
 
 	args := flag.Args()
+
+	Log.Formatter = new(logrus.JSONFormatter)
+	Log.Out = os.Stdout
+
+	if config.verbose {
+		Log.Level = logrus.DebugLevel
+	} else {
+		Log.Level = logrus.ErrorLevel
+	}
 
 	if config.providerKey == "" && len(args) < 1 {
 		return Config{}, errors.New("Either supply content directly or use a provider")

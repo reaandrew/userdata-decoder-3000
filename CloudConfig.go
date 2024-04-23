@@ -35,10 +35,18 @@ func (cloudConfig CloudConfig) SaveWriteFiles(outputDir string) error {
 func ReadCloudConfigFrom(attachment MimeAttachment) (CloudConfig, error) {
 	var config CloudConfig
 
-	err := yaml.Unmarshal(attachment.Content, &config)
+	var err error
+
+	content := attachment.Content
+	content, err = decode(attachment.Content)
+
+	err = yaml.Unmarshal(content, &config)
+
 	if err != nil {
 		return CloudConfig{}, err
 	}
+
+	fmt.Printf("Content %s\n", content)
 
 	var writeFiles []WriteFile
 	for _, file := range config.WriteFiles {

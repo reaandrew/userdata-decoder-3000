@@ -11,6 +11,7 @@ var providers = map[string]DataProvider{
 type Config struct {
 	outputDir   string
 	providerKey string
+	verbose     bool
 	args        []string
 }
 

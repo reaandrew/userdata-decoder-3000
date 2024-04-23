@@ -33,6 +33,7 @@ func (inputProcessor InputProcessor) writeFileWithData(data []byte, filename str
 }
 
 func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
+	Log.Debugln("Processing inputs")
 	for _, input := range inputs {
 		outputPath := filepath.Join(inputProcessor.config.outputDir, input.OutputDir)
 		err := inputProcessor.writeFile(input, "raw")
