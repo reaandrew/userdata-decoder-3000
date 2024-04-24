@@ -44,7 +44,10 @@ func extractFilename(part *multipart.Part) (string, error) {
 
 func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error) {
 	boundary, err := extractBoundary(data)
+
 	if err != nil {
+		Log.WithError(err).
+			Error("Error extrating boundary")
 		return nil, errFailedToExtractMimeBoundary
 	}
 
