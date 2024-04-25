@@ -94,6 +94,8 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 }
 
 func extractBoundary(data []byte) (string, error) {
+	Log.WithField("data", string(data)).
+		Debugln("Parsed Mime Params")
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
 		line := scanner.Text()
