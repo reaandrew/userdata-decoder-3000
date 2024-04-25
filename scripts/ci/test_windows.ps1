@@ -9,11 +9,12 @@ $files = Get-ChildItem -Path .\output\$Os -Recurse -File | Select-Object -Expand
 $fileCount = $files.Count
 Write-Output "Number of files: $fileCount"
 
-# Read required files from a list file
-$requiredFiles = Get-Content -Path .\scripts\ci\expected_files.txt
+# Read required files from a list file and handle potential CR characters
+$requiredFiles = Get-Content -Path .\scripts\ci\expected_files.txt | ForEach-Object { $_.TrimEnd("`r") }
 
-# Check for each required file and exit with an error if any are missing
-$foundFiles = $files | Where-Object { $requiredFiles -contains $_.Name }
+# Normalize file names to a standard format if needed, e.g., lowercasing or similar
+$foundFiles = $files | Where-Object { $requiredFiles -contains ($_.Name.ToLower()) }
+
 
 if ($foundFiles.Count -ne $requiredFiles.Count) {
     Write-Error "Error: Required files are missing!"
