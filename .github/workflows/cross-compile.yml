@@ -131,8 +131,7 @@ jobs:
       - name: Create EC2 instance
         id: create_ec2
         run: |
-          USER_DATA=$(cat test_data/gzip_base64_userdata.txt | base64 -d)
-          INSTANCE_ID=$(aws ec2 run-instances --region eu-west-2 --user-data "$USER_DATA" --image-id ami-018ff7b635dfd082c --instance-type t3.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=UserData3000TestInstance}]'  --query 'Instances[0].InstanceId' --output text)
+          INSTANCE_ID=$(aws ec2 run-instances --region eu-west-2 --user-data file://test_data/gzip_userdata.txt --image-id ami-018ff7b635dfd082c --instance-type t3.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=UserData3000TestInstance}]'  --query 'Instances[0].InstanceId' --output text)
           echo "Fetched Instance ID: $INSTANCE_ID"
           echo "instance_id=$INSTANCE_ID"  >> "$GITHUB_OUTPUT"
 
