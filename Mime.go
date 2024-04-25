@@ -122,12 +122,16 @@ func extractBoundary(data []byte) (string, error) {
 				WithField("Found", found).
 				Debugln("Parsed Mime Params")
 			if !found {
+				Log.WithField("Found", found).
+					Debugln("Boundary not found returning EOF")
 				return "", io.EOF
 			}
 			return boundary, nil
 		}
 	}
-	return "", nil
+	panic("BOOM")
+	Log.WithField("DATA", string(data)).Debug("Returning EOF as scanner empty")
+	return "", io.EOF
 }
 
 func ExtractMimeAttachmentsFromBytes(decoded []byte) (attachments []MimeAttachment, err error) {
