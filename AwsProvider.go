@@ -75,7 +75,7 @@ func (p *AWSProvider) FetchData() ([]DataOutputPair, error) {
 
 				if attributeOutput != nil && attributeOutput.UserData != nil && attributeOutput.UserData.Value != nil {
 					userData := *attributeOutput.UserData.Value
-
+					Log.WithField("UserData", userData).Debug("User Data fetched from AWS")
 					mu.Lock()
 					outputPairs = append(outputPairs, DataOutputPair{
 						Data:      []byte(userData),
