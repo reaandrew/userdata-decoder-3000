@@ -57,7 +57,8 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: integration_test
+    needs:
+      - integration_test
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,6 +78,21 @@ jobs:
 
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
+
+      - name: Install dh-make-golang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dh-make-golang
+
+      - name: Create Debian Package
+        run: |
+          # Assuming your Go binary is ready and named accordingly
+          # For dh-make-golang, a properly structured Go workspace is needed
+          export GOPATH=$PWD/go
+          mkdir -p $GOPATH/src/github.com/reaandrew
+          cp -R ./build $GOPATH/src/github.com/reaandrew/userdata-decoder-3000
+          cd $GOPATH/src/github.com/reaandrew/userdata-decoder-3000
+          dh-make-golang --create-origin --create-maintainer --email "andrew.rea@andrewreaassociates.com" --build
 
       - name: Create Release
         id: create_release
