@@ -146,7 +146,7 @@ jobs:
         include:
           - os: windows-latest
             executable: ./build/udd-windows-amd64.exe
-            script_path: scripts\ci\test_windows.ps1
+            script_path: scripts/ci/test_windows.ps1
           - os: macos-latest
             executable: ./build/udd-darwin-amd64
             script_path: ./scripts/ci/test_nix.sh
@@ -181,7 +181,7 @@ jobs:
 
       - name: Run test script on Windows
         if: matrix.os == 'windows-latest'
-        run: .\${{ matrix.script_path }} ${{ matrix.executable }} ${{ matrix.os }}
+        run: ./${{ matrix.script_path }} ${{ matrix.executable }} ${{ matrix.os }}
         shell: pwsh
 
       - name: Archive production artifacts
