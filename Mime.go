@@ -94,8 +94,6 @@ func decodeMimAttachments(data []byte) (attachments []MimeAttachment, err error)
 }
 
 func extractBoundary(data []byte) (string, error) {
-	Log.WithField("data", string(data)).
-		Debugln("Parsed Mime Params")
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -120,13 +118,16 @@ func extractBoundary(data []byte) (string, error) {
 				return "", err
 			}
 			boundary, found := params["boundary"]
+			Log.WithField("Returning Boundary", boundary).
+				WithField("Found", found).
+				Debugln("Parsed Mime Params")
 			if !found {
 				return "", io.EOF
 			}
 			return boundary, nil
 		}
 	}
-	return "", io.EOF
+	return "", nil
 }
 
 func ExtractMimeAttachmentsFromBytes(decoded []byte) (attachments []MimeAttachment, err error) {
