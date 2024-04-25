@@ -41,12 +41,13 @@ func (inputProcessor InputProcessor) Process(inputs []DataOutputPair) error {
 			return err
 		}
 
+		Log.WithField("decoded_data", string(input.Data)).Debug("Encoded Data")
 		decoded, err := decode(input.Data)
 		rawErr := inputProcessor.writeFileWithData(decoded, filepath.Join(outputPath, "raw_base64Decoded"))
 		if rawErr != nil {
 			return rawErr
 		}
-
+		Log.WithField("decoded_data", string(decoded)).Debug("Decoded Data")
 		if err != nil {
 			fmt.Println(fmt.Sprintf("There was an error decoding the base64 content %v", err))
 			err := inputProcessor.writeFile(input, "userdata")
