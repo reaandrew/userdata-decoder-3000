@@ -174,7 +174,7 @@ jobs:
 
       - name: Run test script on nix
         if: matrix.os != 'windows-latest'
-        run: bash ${{ matrix.script_path }} ${{ matrix.executable }} ${{ matrix.os }}
+        run: find ./ && bash ${{ matrix.script_path }} ${{ matrix.executable }} ${{ matrix.os }}
         shell: bash
 
       - name: Run test script on Windows
