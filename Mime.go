@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -98,6 +99,13 @@ func extractBoundary(data []byte) (string, error) {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "Content-Type:") {
 			_, params, err := mime.ParseMediaType(strings.TrimPrefix(line, "Content-Type: "))
+			paramsFields := logrus.Fields{}
+			for key, value := range params {
+				paramsFields[key] = value
+			}
+			Log.WithFields(paramsFields).
+				Debugln("Parsed Mime Params")
+
 			if err != nil {
 				Log.WithError(err).
 					WithField("line", line).
