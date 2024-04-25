@@ -129,7 +129,7 @@ func extractBoundary(data []byte) (string, error) {
 			return boundary, nil
 		}
 	}
-	panic("BOOM")
+
 	Log.WithField("DATA", string(data)).Debug("Returning EOF as scanner empty")
 	return "", io.EOF
 }
