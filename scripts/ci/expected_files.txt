@@ -1,3 +1,2 @@
 raw
-userdata
 raw_base64Decoded
