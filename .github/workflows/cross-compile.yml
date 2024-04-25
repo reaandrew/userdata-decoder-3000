@@ -146,7 +146,7 @@ jobs:
         include:
           - os: windows-latest
             executable: ./build/udd-windows-amd64.exe
-            script_path: ./scripts/ci/test_windows.ps1
+            script_path: scripts\ci\test_windows.ps1
           - os: macos-latest
             executable: ./build/udd-darwin-amd64
             script_path: ./scripts/ci/test_nix.sh
