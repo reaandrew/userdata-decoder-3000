@@ -146,10 +146,13 @@ jobs:
         include:
           - os: windows-latest
             executable: ./build/udd-windows-amd64.exe
+            script_path: ./scripts/ci/test_windows.ps1
           - os: macos-latest
             executable: ./build/udd-darwin-amd64
+            script_path: ./scripts/ci/test_nix.sh
           - os: ubuntu-latest
             executable: ./build/udd-linux-amd64
+            script_path: ./scripts/ci/test_nix.sh
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -169,38 +172,14 @@ jobs:
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
 
-      - name: Run on Linux or macOS
-        if: matrix.os != 'Windows'
-        run: |
-          ${{ matrix.executable }} --provider aws -v --output-dir ./output/${{ matrix.os }}/
-          files=$(find ./output/${{ matrix.os }} -type f)
-          echo $files
-          grep -q raw <<< "$files" || (echo "can't find raw" && exit 1)
-          grep -q userdata <<< "$files" || (echo "can't find userdata" && exit 1)
-          grep -q raw_base64Decoded <<< "$files" || (echo "can't find raw_base64Decoded" && exit 1)
+      - name: Run test script on nix
+        if: matrix.os != 'windows-latest'
+        run: bash ${{ matrix.script_path }} ${{ matrix.executable }} ${{ matrix.os }}
         shell: bash
 
-      - name: Run on Windows
+      - name: Run test script on Windows
         if: matrix.os == 'windows-latest'
-        run: |
-          & ${{ matrix.executable }} --provider aws -v --output-dir ./output/${{ matrix.os }}/
-          $files = Get-ChildItem -Path .\output\${{ matrix.os }} -Recurse -File | Select-Object -ExpandProperty FullName
-          $fileCount = $files.Count
-          Write-Output "Number of files: $fileCount"
-          
-          # Check if the required files exist in the output
-          $requiredFiles = @('raw', 'userdata', 'raw_base64Decoded')
-          $foundFiles = $files | Where-Object { $_ -match $requiredFiles -join '|' }
-          
-          if ($foundFiles.Count -ne $requiredFiles.Count) {
-            Write-Error "Error: Required files are missing!"
-            exit 1
-          }
-            
-          if ($fileCount -ne 6) {
-            Write-Error "Error: Incorrect number of files found! Expected 6, found $fileCount"
-            exit 1
-          }
+        run: .\${{ matrix.script_path }} ${{ matrix.executable }} ${{ matrix.os }}
         shell: pwsh
 
       - name: Archive production artifacts
