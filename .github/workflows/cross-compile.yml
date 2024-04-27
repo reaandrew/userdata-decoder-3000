@@ -84,15 +84,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dh-make-golang
 
+      - uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+        with:
+          ruby-version: '3.1' # Not needed with a .ruby-version file
+
       - name: Create Debian Package
         run: |
-          # Assuming your Go binary is ready and named accordingly
-          # For dh-make-golang, a properly structured Go workspace is needed
-          export GOPATH=$PWD/go
-          mkdir -p $GOPATH/src/github.com/reaandrew
-          cp -R ./build $GOPATH/src/github.com/reaandrew/userdata-decoder-3000
-          cd $GOPATH/src/github.com/reaandrew/userdata-decoder-3000
-          dh-make-golang --create-origin --create-maintainer --email "andrew.rea@andrewreaassociates.com" --build
+          fpm -s dir \
+              -t deb \
+              -n udd \
+              -p ./build/udd-amd64-${{  github.ref_name }}.deb \
+              -v ${{  github.ref_name }} \
+              --description "See what things are being stored in user data to ensure there is no sensitive information in there" \
+              --url "https://userdata-decoder-3000.andrewrea.co.uk/" \
+              --maintainer "Andy Rea <email@andrewrea.co.uk>" \
+              --prefix=/usr/local/bin ./build/udd-linux-amd64
 
       - name: Create Release
         id: create_release
@@ -125,6 +131,14 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/udd-linux-amd64
           asset_name: udd-linux-amd64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Deb Package Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/udd-amd64-${{  github.ref_name }}.deb
+          asset_name: udd-amd64-${{  github.ref_name }}.deb
           asset_content_type: application/octet-stream
 
   integration_test_setup:
@@ -231,9 +245,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Create build directory
         run: mkdir -p ./build
 
@@ -245,22 +256,6 @@ jobs:
 
       - name: Untar build directory
         run: tar -xzvf ./downloaded/build.tar.gz -C ./build
-
-#      - name: Install dh-make-golang
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y dh-make-golang
-#
-#      - name: Create Debian Package
-#        run: |
-#          # Assuming your Go binary is ready and named accordingly
-#          # For dh-make-golang, a properly structured Go workspace is needed
-#          export GOPATH=$PWD/go
-#          mkdir -p $GOPATH/src/github.com/reaandrew
-##          cp -R ./build $GOPATH/src/github.com/reaandrew/userdata-decoder-3000
-##          cd $GOPATH/src/github.com/reaandrew/userdata-decoder-3000
-##          dh-make-golang --create-origin --create-maintainer --email "andrew.rea@andrewreaassociates.com" --build
-
 
       - name: Install GitHub CLI
         run: sudo apt install gh
