@@ -289,6 +289,7 @@ jobs:
       - name: Create Debian Package
         run: |
           gem install fpm
+          cp ./build/udd-linux-amd64 ./udd
           fpm -s dir \
               -t deb \
               -n udd \
@@ -299,7 +300,7 @@ jobs:
               --maintainer "Andy Rea <email@andrewrea.co.uk>" \
               --prefix=/usr/local/bin \
               --deb-no-default-config-files \
-              ./build/udd-linux-amd64=/usr/local/bin/udd
+              ./udd
 
       - name: Create Release
         id: create_release
