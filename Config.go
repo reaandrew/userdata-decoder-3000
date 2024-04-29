@@ -12,6 +12,7 @@ type Config struct {
 	outputDir   string
 	providerKey string
 	verbose     bool
+	version     bool
 	args        []string
 }
 

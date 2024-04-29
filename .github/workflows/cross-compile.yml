@@ -42,9 +42,9 @@ jobs:
 
       - name: Cross-Compile for Windows, macOS, and Linux
         run: |
-          env GOOS=windows GOARCH=amd64 go build -o ./build/udd-windows-amd64.exe
-          env GOOS=darwin GOARCH=amd64 go build -o ./build/udd-darwin-amd64
-          env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -ldflags '-linkmode external -extldflags "-static"' -o ./build/udd-linux-amd64
+          env GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=${{ github.ref_name }}'" -o ./build/udd-windows-amd64.exe
+          env GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=${{ github.ref_name }}'" -o ./build/udd-darwin-amd64
+          env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -ldflags '-linkmode external -extldflags "-static" -X "main.Version=${{ github.ref_name }}"' -o ./build/udd-linux-amd64
 
       - name: Tar build directory
         run: tar -czvf build.tar.gz -C build .
@@ -136,7 +136,7 @@ jobs:
           path: ./output/
 
   teardown:
-    if: always()
+    if: github.ref == 'refs/heads/main'
     needs:
      - integration_test
      - integration_test_setup

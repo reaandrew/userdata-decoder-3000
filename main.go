@@ -10,6 +10,7 @@ import (
 )
 
 var Log = logrus.New()
+var Version string
 
 func main() {
 	if err := run(); err != nil {
@@ -42,6 +43,8 @@ func run() error {
 func parseFlags() (config Config, err error) {
 	flag.StringVar(&config.providerKey, "p", "", "Specify the data provider (e.g., aws).")
 	flag.StringVar(&config.providerKey, "provider", "", "Specify the data provider (e.g., aws).")
+	flag.BoolVar(&config.version, "v", false, "Output the current version")
+	flag.BoolVar(&config.version, "version", false, "Output the current version")
 	flag.BoolVar(&config.verbose, "v", false, "Output debug information from the process")
 	flag.BoolVar(&config.verbose, "verbose", false, "Output debug information from the process")
 	flag.StringVar(&config.outputDir, "o", "output", "Specify the output directory within your working directory.")
@@ -64,6 +67,11 @@ func parseFlags() (config Config, err error) {
 
 	Log.Formatter = new(logrus.JSONFormatter)
 	Log.Out = os.Stdout
+
+	if config.version {
+		fmt.Println("Version: " + Version)
+		os.Exit(0)
+	}
 
 	if config.verbose {
 		Log.Level = logrus.DebugLevel
