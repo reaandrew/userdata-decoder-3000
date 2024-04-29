@@ -297,7 +297,9 @@ jobs:
               --description "See what things are being stored in user data to ensure there is no sensitive information in there" \
               --url "https://userdata-decoder-3000.andrewrea.co.uk/" \
               --maintainer "Andy Rea <email@andrewrea.co.uk>" \
-              --prefix=/usr/local/bin ./build/udd-linux-amd64
+              --prefix=/usr/local/bin \
+              --deb-no-default-config-files \
+              udd-linux-amd64=/usr/local/bin/udd
 
       - name: Create Release
         id: create_release
