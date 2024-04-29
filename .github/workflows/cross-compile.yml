@@ -299,7 +299,7 @@ jobs:
               --maintainer "Andy Rea <email@andrewrea.co.uk>" \
               --prefix=/usr/local/bin \
               --deb-no-default-config-files \
-              udd-linux-amd64=/usr/local/bin/udd
+              ./build/udd-linux-amd64=/usr/local/bin/udd
 
       - name: Create Release
         id: create_release
