@@ -43,7 +43,6 @@ func run() error {
 func parseFlags() (config Config, err error) {
 	flag.StringVar(&config.providerKey, "p", "", "Specify the data provider (e.g., aws).")
 	flag.StringVar(&config.providerKey, "provider", "", "Specify the data provider (e.g., aws).")
-	flag.BoolVar(&config.version, "v", false, "Output the current version")
 	flag.BoolVar(&config.version, "version", false, "Output the current version")
 	flag.BoolVar(&config.verbose, "v", false, "Output debug information from the process")
 	flag.BoolVar(&config.verbose, "verbose", false, "Output debug information from the process")
@@ -58,6 +57,7 @@ func parseFlags() (config Config, err error) {
 		fmt.Println("  -o, --output-dir: Specify the output directory within your working directory. (default \"output\")")
 		fmt.Println("  -p, --provider:   Specify the data provider (e.g., aws).")
 		fmt.Println("  -v, --verbose:   Output debug information from the process")
+		fmt.Println("  	   --version:   OOutput the current version")
 		os.Exit(0)
 	}
 
